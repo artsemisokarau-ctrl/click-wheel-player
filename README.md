@@ -1,6 +1,6 @@
 # Click Wheel Player
 
-A music player that runs in the browser, with three devices to switch between under **Settings → Device**: Classic → Touch → First-gen Phone.
+A music player that runs in the browser, with three devices: Click Wheel, Touch Player and Phone. Switch with the buttons under the device (or Settings → Device).
 
 **Play it:** https://artsemisokarau-ctrl.github.io/click-wheel-player/
 
