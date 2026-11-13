@@ -101,7 +101,7 @@ const artStyle=(t,alb)=>t&&t.art?`background-image:url('${t.art}')`:`background:
 const artHTML=(t,alb)=>`style="${artStyle(t,alb)}"`+'>'+(t&&t.art?'':'♪');
 
 // settings
-const S={shuffle:false,repeat:'Off',clicker:true,case:'White'};
+const S={shuffle:false,repeat:'Off',clicker:true,case:'White',device:'Classic'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('cwp-settings')||'{}'))}catch(e){}
 const save=()=>{try{localStorage.setItem('cwp-settings',JSON.stringify(S))}catch(e){}};
 const applyCase=()=>$('#device').classList.toggle('black',S.case==='Black');applyCase();
@@ -175,6 +175,7 @@ const settingsMenu=()=>listView('Settings',()=>[
   {label:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();render()}},
   {label:'Clicker',val:S.clicker?'On':'Off',go:()=>{S.clicker=!S.clicker;save();render()}},
   {label:'Case Color',val:S.case,go:()=>{S.case=S.case==='White'?'Black':'White';save();applyCase();render()}},
+  {label:'Device',val:'Classic',go:()=>{S.device='Touch';save();applyDevice()}},
   {label:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');render()}}
 ]);
 
@@ -214,7 +215,7 @@ function brick(){const W=304,H=206;const g={type:'game',title:'Brick',canvas:tru
   reset(){this.bricks=[];for(let r=0;r<5;r++)for(let c=0;c<8;c++)this.bricks.push({x:4+c*37.5,y:14+r*12,w:34,h:9,r});this.lives=3;this.score=0;this.serve()},
   serve(){this.ball={x:this.px+25,y:H-20,vx:0,vy:0};this.running=false},
   render(){return`<canvas id="cv" width="${W}" height="${H}"></canvas>`},
-  mount(){this.ctx=$('#cv').getContext('2d');const loop=()=>{if(view()!==this)return;this.step();this.draw();requestAnimationFrame(loop)};loop()},
+  mount(){this.ctx=$('#cv').getContext('2d');const loop=()=>{if(!(this.active?this.active():view()===this))return;this.step();this.draw();requestAnimationFrame(loop)};loop()},
   onScroll(d){this.px=Math.min(W-50,Math.max(0,this.px+d*18));if(!this.running)this.ball.x=this.px+25},
   onSelect(){if(this.lives<=0||!this.bricks.length){this.reset();return}if(!this.running){this.running=true;this.ball.vx=(Math.random()<.5?-1:1)*2.2;this.ball.vy=-2.8}},
   step(){const b=this.ball;if(!this.running)return;b.x+=b.vx;b.y+=b.vy;
@@ -282,5 +283,130 @@ $('#file').addEventListener('change',e=>{addFiles(e.target.files);e.target.value
 
 stack.push(mainMenu);render();
 </script>
+<style>
+.touch{display:none;width:340px;height:640px;border-radius:46px;padding:62px 18px 0;position:relative;background:linear-gradient(160deg,#2c2c2f,#0b0b0c);box-shadow:0 30px 60px rgba(0,0,0,.45),inset 0 0 0 2px #9a9a9f,inset 0 0 0 5px #111}
+.touch:before{content:"";position:absolute;top:30px;left:50%;width:48px;height:6px;margin-left:-24px;border-radius:3px;background:#222;box-shadow:inset 0 1px 2px #000}
+.tscreen{width:304px;height:456px;background:#000;position:relative;overflow:hidden}
+.thome{position:absolute;bottom:30px;left:50%;width:56px;height:56px;margin-left:-28px;border-radius:50%;background:linear-gradient(#1a1a1c,#323236);box-shadow:inset 0 1px 3px #000,0 0 0 1px #444;cursor:pointer}
+.thome:after{content:"";position:absolute;inset:19px;border:2px solid #888;border-radius:4px}
+.tsb{height:20px;background:#000;color:#fff;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;padding:0 6px}
+.tsb .bat{border-color:#fff}.tsb .bat:after{background:#fff}
+.tpage{position:absolute;top:20px;left:0;right:0;bottom:0;display:flex;flex-direction:column;background:#fff}
+.tnav{height:42px;flex:none;background:linear-gradient(#b8c3d1,#6d84a2);border-bottom:1px solid #2d3642;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,.4);font-size:17px}
+.tnav b{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tbk{position:absolute;left:6px;top:7px;height:28px;padding:0 10px 0 8px;border-radius:5px;border:1px solid #3d4f68;background:linear-gradient(#8fa3bd,#4a6688);color:#fff;font-size:12px;font-weight:700;cursor:pointer;text-shadow:0 -1px 0 rgba(0,0,0,.4)}
+.tcontent{flex:1;overflow-y:auto;position:relative;min-height:0}
+.thomebg{background:radial-gradient(circle at 30% 20%,#3b6fb6,#14284d 60%,#060b16)}
+.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 0;padding:20px 6px}
+.tapp{display:flex;flex-direction:column;align-items:center;gap:5px;color:#fff;font-size:11px;background:none;border:0;cursor:pointer;text-shadow:0 1px 2px #000;font-family:inherit}
+.tapp i{width:57px;height:57px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px;font-style:normal;box-shadow:0 2px 5px rgba(0,0,0,.6);position:relative;overflow:hidden;color:#fff}
+.tapp i:after{content:"";position:absolute;left:-10%;right:-10%;top:-50%;height:95%;border-radius:0 0 50% 50%;background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,.1))}
+.tapp:active i{filter:brightness(.7)}
+.trow{display:flex;align-items:center;gap:10px;padding:0 12px;height:52px;border-bottom:1px solid #ddd;cursor:pointer}
+.trow:active{background:linear-gradient(#058cf5,#015fe6);color:#fff}
+.tth{width:40px;height:40px;flex:none;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:#fff}
+.trow .m{flex:1;min-width:0}.trow .m b,.trow .m small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trow .m b{font-size:15px}.trow .m small{font-size:12px;color:#777}.trow:active small{color:#dde}
+.trow em{font-style:normal;color:#385487;font-size:14px}.trow .ch{color:#999;font-size:20px}
+.tmusic{display:flex;flex-direction:column;overflow:hidden}.tscroll{flex:1;overflow-y:auto}
+.ttabs{display:flex;height:48px;flex:none;background:linear-gradient(#3a3a3a,#111)}
+.ttab{flex:1;color:#999;font-size:10px;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit}
+.ttab span{font-size:18px}.ttab.on{color:#fff;background:rgba(255,255,255,.13);border-radius:4px;margin:3px}
+.tnp{background:linear-gradient(#2a2a2a,#000);color:#fff;display:flex;flex-direction:column;align-items:center;padding:12px 18px;gap:5px}
+.tart{width:180px;height:180px;flex:none;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:60px;color:rgba(255,255,255,.85);box-shadow:0 4px 14px rgba(0,0,0,.7)}
+.tnp input[type=range]{width:100%;accent-color:#fff;margin:4px 0 0}
+.ttimes{width:100%;display:flex;justify-content:space-between;font-size:11px;color:#bbb}
+.tti{font-size:15px;font-weight:700;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tar{font-size:12px;color:#aaa;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tctl{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:2px}
+.tctl button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;opacity:.9}
+.tctl button.big{font-size:34px}.tctl button.dim{opacity:.35}
+.tvol{display:flex;align-items:center;gap:6px;width:100%;font-size:13px}
+.tempty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#888;font-size:13px;gap:6px;padding:24px}
+.tempty b{font-size:16px;color:#444}.tnp .tempty b{color:#eee}
+.tbtns{display:flex;gap:12px;justify-content:center;padding:14px}
+.tbtns button{min-width:80px;height:40px;border-radius:8px;border:1px solid #999;background:linear-gradient(#fff,#ddd);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
+.tbtns button.go{background:linear-gradient(#6fd36f,#2e9a2e);color:#fff;border-color:#2a7a2a}
+.tbtns button.stop{background:linear-gradient(#f07070,#c0392b);color:#fff;border-color:#922}
+.tgame{background:#0b1020}.tgame canvas{width:100%;touch-action:none}
+.tgame p{color:#8a93a8;font-size:12px;text-align:center;margin:10px}
+</style>
+<div class="touch" id="touch">
+  <div class="tscreen"><div class="tsb"><span>Music Player</span><span id="tclock"></span><span class="bat"><i></i></span></div><div class="tpage" id="tpage"></div></div>
+  <div class="thome" id="thomebtn" title="Home"></div>
+</div>
+<script>
+(function(){
+const tpage=$('#tpage');const T={stack:[],tab:'Songs'};const top=()=>T.stack[T.stack.length-1];
+function tpush(p){if(p){T.stack.push(p);trender()}}
+function tback(){if(T.stack.length>1){T.stack.pop();trender()}}
+function trender(){if(S.device!=='Touch')return;const p=top();
+  tpage.innerHTML=(p.nav?`<div class="tnav">${T.stack.length>1?'<button class="tbk">‹ Back</button>':''}<b>${esc(p.title)}</b></div>`:'')+`<div class="tcontent ${p.cls||''}">${p.html()}</div>`;
+  const bk=tpage.querySelector('.tbk');if(bk)bk.onclick=tback;if(p.bind)p.bind(tpage.querySelector('.tcontent'))}
+const thumb=(t,alb)=>`<div class="tth" style="${artStyle(t,alb)}">${t&&t.art?'':'♪'}</div>`;
+const rowsHTML=items=>items.length?items.map((it,i)=>`<div class="trow" data-i="${i}">${it.thumb||''}<div class="m"><b>${esc(it.main)}</b>${it.sub?`<small>${esc(it.sub)}</small>`:''}</div>${it.val?`<em>${esc(it.val)}</em>`:it.ch?'<span class="ch">›</span>':''}</div>`).join(''):`<div class="tempty"><b>No music yet</b>Drop audio files onto the page, or tap Add Music on the home screen.</div>`;
+const bindRows=(el,items)=>el.querySelectorAll('.trow').forEach(r=>r.onclick=()=>{const it=items[+r.dataset.i];if(it&&it.go)tpush(it.go())});
+const songItems=list=>list.map((t,i)=>({main:t.title,sub:t.artist+' — '+t.album,thumb:thumb(t,t.album),go:()=>{playQueue(list,i);return npPage()}}));
+function listPage(title,itemsFn){let items;return{nav:true,title,html(){items=itemsFn();return rowsHTML(items)},bind(el){bindRows(el,items)}}}
+const tabs={Songs:'♫',Artists:'👤',Albums:'💿'};
+function musicPage(){let items;return{nav:true,title:'Music',cls:'tmusic',
+  html(){items=T.tab==='Songs'?songItems(byTitle(tracks)):T.tab==='Artists'?uniq('artist').map(a=>({main:a,ch:1,go:()=>listPage(a,()=>songItems(byTitle(tracks.filter(t=>t.artist===a))))})):
+    albums().map(al=>({main:al.name,sub:al.artist,thumb:thumb(al.cover.art?al.cover:null,al.name),ch:1,go:()=>listPage(al.name,()=>songItems(al.songs))}));
+    return`<div class="tscroll">${rowsHTML(items)}</div><div class="ttabs">`+Object.keys(tabs).map(k=>`<button class="ttab ${k===T.tab?'on':''}" data-t="${k}"><span>${tabs[k]}</span>${k}</button>`).join('')+`</div>`},
+  bind(el){bindRows(el,items);el.querySelectorAll('.ttab').forEach(b=>b.onclick=()=>{T.tab=b.dataset.t;trender()})}}}
+let seeking=false;
+function npPage(){return{nav:true,title:'Now Playing',cls:'tnp',
+  html(){const t=cur();if(!t)return`<div class="tempty"><b>Nothing playing</b>Pick a song in Music.</div>`;
+    return`<div class="tart" style="${artStyle(t,t.album)}">${t.art?'':'♪'}</div>
+    <input type="range" class="tscrub" min="0" max="1000" value="0"><div class="ttimes"><span class="tc">0:00</span><span>${qi+1} of ${queue.length}</span><span class="tr">-0:00</span></div>
+    <div class="tti">${esc(t.title)}</div><div class="tar">${esc(t.artist)} — ${esc(t.album)}</div>
+    <div class="tctl"><button data-a="sh" class="${S.shuffle?'':'dim'}">🔀</button><button data-a="prev">⏮</button><button data-a="play" class="big">${audio.paused?'▶':'⏸'}</button><button data-a="next">⏭</button><button data-a="rp" class="${S.repeat==='Off'?'dim':''}">${S.repeat==='One'?'🔂':'🔁'}</button></div>
+    <div class="tvol">🔈<input type="range" class="tvolr" min="0" max="100" value="${Math.round(audio.volume*100)}">🔊</div>`},
+  bind(el){const sc=el.querySelector('.tscrub');if(!sc)return;
+    sc.oninput=()=>{seeking=true};sc.onchange=()=>{if(audio.duration)audio.currentTime=sc.value/1000*audio.duration;seeking=false};
+    el.querySelector('.tvolr').oninput=e=>{audio.volume=e.target.value/100};
+    el.querySelectorAll('.tctl button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+      if(a==='play')togglePlay();else if(a==='next')next(false);else if(a==='prev')prev();
+      else if(a==='sh'){S.shuffle=!S.shuffle;save();trender()}else if(a==='rp'){S.repeat={Off:'All',All:'One',One:'Off'}[S.repeat];save();trender()}});
+    this.update(el)},
+  update(el){const sc=el.querySelector('.tscrub');if(!sc)return;const d=audio.duration||0;if(!seeking)sc.value=d?audio.currentTime/d*1000:0;
+    el.querySelector('.tc').textContent=fmt(audio.currentTime);el.querySelector('.tr').textContent='-'+fmt(d-audio.currentTime)}}}
+function cfPage(){const cf=coverFlow();return{nav:true,title:'Cover Flow',html(){return cf.render()},
+  bind(el){let x0=0;el.onpointerdown=e=>{x0=e.clientX};el.onpointerup=e=>{const dx=e.clientX-x0,r=el.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width;
+    if(dx>30)cf.onScroll(-1);else if(dx<-30)cf.onScroll(1);else if(fx<.3)cf.onScroll(-1);else if(fx>.7)cf.onScroll(1);
+    else{const al=albums()[cf.sel];if(al)tpush(listPage(al.name,()=>songItems(al.songs)))}}}}}
+function clockPage(){const c=clockView();return{nav:true,title:'Clock',html(){return c.render()},update(el){el.innerHTML=c.render()}}}
+function swPage(){const sw=stopwatch();return{nav:true,title:'Stopwatch',
+  html(){return`<div class="big" style="height:auto;padding-top:40px"><div class="tm" style="font-size:46px">${sw.f(sw.el())}</div></div>
+    <div class="tbtns"><button data-a="lap">${sw.run?'Lap':'Reset'}</button><button data-a="go" class="${sw.run?'stop':'go'}">${sw.run?'Stop':'Start'}</button></div>`+
+    rowsHTML(sw.laps.map((l,i)=>({main:'Lap '+(i+1),val:sw.f(l)})).reverse()).replace(/<div class="tempty">.*<\/div>/,'')},
+  bind(el){el.querySelectorAll('.tbtns button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='go')sw.onSelect();else if(sw.run)sw.onNext();else sw.onPrev();trender()})},
+  update(el){const tm=el.querySelector('.tm');if(tm)tm.textContent=sw.f(sw.el())}}}
+function brickPage(){const g=brick();const p={nav:true,title:'Brick',cls:'tgame',noRefresh:true,
+  html(){return g.render()+'<p>Drag to move the paddle · tap to launch</p>'},
+  bind(el){g.active=()=>S.device==='Touch'&&top()===p;g.mount();const cv=el.querySelector('canvas');
+    const mv=e=>{const r=cv.getBoundingClientRect();g.px=Math.min(304-50,Math.max(0,(e.clientX-r.left)*304/r.width-25));if(!g.running)g.ball.x=g.px+25};
+    cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);mv(e);g.onSelect()};cv.onpointermove=e=>{if(e.buttons)mv(e)}}};return p}
+function setPage(){return listPage('Settings',()=>[
+  {main:'Shuffle',val:S.shuffle?'On':'Off',go:()=>{S.shuffle=!S.shuffle;save();trender()}},
+  {main:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();trender()}},
+  {main:'Device',val:'Touch',go:()=>{S.device='Classic';save();applyDevice()}},
+  {main:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');trender()}}])}
+const apps=[['Music','♫','#ff7a59,#d6246e',musicPage],['Now Playing','▶','#4facfe,#1d4ed8',npPage],['Cover Flow','💿','#555,#111',cfPage],['Clock','🕒','#3a3a3a,#000',clockPage],
+  ['Stopwatch','⏱','#f7a531,#d35400',swPage],['Brick','🧱','#2bc48a,#11785a',brickPage],['Add Music','＋','#b39ddb,#6a4cc2',()=>{$('#file').click()}],['Settings','⚙️','#c3cad1,#6c7a89',setPage]];
+const home={cls:'thomebg',html(){return'<div class="tgrid">'+apps.map((a,i)=>`<button class="tapp" data-i="${i}"><i style="background:linear-gradient(${a[2]})">${a[1]}</i>${a[0]}</button>`).join('')+'</div>'},
+  bind(el){el.querySelectorAll('.tapp').forEach(b=>b.onclick=()=>tpush(apps[+b.dataset.i][3]()))}};
+T.stack=[home];
+$('#thomebtn').onclick=()=>{T.stack.length=1;trender()};
+const _render=render;render=function(){_render();const p=top();if(S.device==='Touch'&&!p.noRefresh)trender()};
+setInterval(()=>{$('#tclock').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(S.device!=='Touch')return;const p=top();if(p.update)p.update(tpage.querySelector('.tcontent'))},250);
+addEventListener('keydown',e=>{if(S.device!=='Touch')return;if(e.key===' '){e.preventDefault();togglePlay()}else if(e.key==='Escape')tback();e.stopImmediatePropagation()},true);
+window.applyDevice=function(){const t=S.device==='Touch';$('#device').style.display=t?'none':'';$('#touch').style.display=t?'block':'none';
+  $('.help').innerHTML=t?'Tap the screen like a phone. The round button under the screen goes home. Drag music files anywhere on the page.':HELP;
+  stack.length=1;T.stack.length=1;_render();trender()};
+document.body.insertBefore($('#touch'),$('.help'));const HELP=$('.help').innerHTML;applyDevice();
+})();
+</script>
+
 </body>
 </html>
