@@ -168,11 +168,14 @@ const musicMenu=()=>listView('Music',()=>[
 const extrasMenu=()=>listView('Extras',()=>[
   {label:'Clock',arrow:1,go:()=>clockView()},
   {label:'Stopwatch',arrow:1,go:()=>stopwatch()},
+  {label:'Visualizer',arrow:1,go:()=>vizView()},
   {label:'Games',arrow:1,go:()=>listView('Games',()=>[{label:'Brick',arrow:1,go:()=>brick()}])}
 ]);
 const settingsMenu=()=>listView('Settings',()=>[
   {label:'Shuffle',val:S.shuffle?'Songs':'Off',go:()=>{S.shuffle=!S.shuffle;save();render()}},
   {label:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();render()}},
+  {label:'EQ',val:S.eq||'Flat',go:()=>{cycleEQ();render()}},
+  {label:'Brightness',val:(S.bright||100)+'%',go:()=>{cycleBright();render()}},
   {label:'Clicker',val:S.clicker?'On':'Off',go:()=>{S.clicker=!S.clicker;save();render()}},
   {label:'Case Color',val:S.case,go:()=>{S.case=S.case==='White'?'Black':'White';save();applyCase();render()}},
   {label:'Device',val:'Classic',go:()=>{S.device='Touch';save();applyDevice()}},
@@ -338,7 +341,7 @@ stack.push(mainMenu);render();
 <script>
 (function(){
 const tpage=$('#tpage');const T={stack:[],tab:'Songs'};const top=()=>T.stack[T.stack.length-1];
-function tpush(p){if(p){T.stack.push(p);trender()}}
+function tpush(p){if(p){T.stack.push(p);tpage.classList.add('anim');trender();setTimeout(()=>tpage.classList.remove('anim'),260)}}
 function tback(){if(T.stack.length>1){T.stack.pop();trender()}}
 function trender(){if(S.device!=='Touch')return;const p=top();
   tpage.innerHTML=(p.nav?`<div class="tnav">${T.stack.length>1?'<button class="tbk">‹ Back</button>':''}<b>${esc(p.title)}</b></div>`:'')+`<div class="tcontent ${p.cls||''}">${p.html()}</div>`;
@@ -396,15 +399,213 @@ const apps=[['Music','♫','#ff7a59,#d6246e',musicPage],['Now Playing','▶','#4
   ['Stopwatch','⏱','#f7a531,#d35400',swPage],['Brick','🧱','#2bc48a,#11785a',brickPage],['Add Music','＋','#b39ddb,#6a4cc2',()=>{$('#file').click()}],['Settings','⚙️','#c3cad1,#6c7a89',setPage]];
 const home={cls:'thomebg',html(){return'<div class="tgrid">'+apps.map((a,i)=>`<button class="tapp" data-i="${i}"><i style="background:linear-gradient(${a[2]})">${a[1]}</i>${a[0]}</button>`).join('')+'</div>'},
   bind(el){el.querySelectorAll('.tapp').forEach(b=>b.onclick=()=>tpush(apps[+b.dataset.i][3]()))}};
-T.stack=[home];
+T.stack=[home];window.TT={T,tpush,tback,trender,listPage,home,top,musicPage,npPage,cfPage,clockPage,swPage,brickPage,thumb};
 $('#thomebtn').onclick=()=>{T.stack.length=1;trender()};
 const _render=render;render=function(){_render();const p=top();if(S.device==='Touch'&&!p.noRefresh)trender()};
 setInterval(()=>{$('#tclock').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(S.device!=='Touch')return;const p=top();if(p.update)p.update(tpage.querySelector('.tcontent'))},250);
-addEventListener('keydown',e=>{if(S.device!=='Touch')return;if(e.key===' '){e.preventDefault();togglePlay()}else if(e.key==='Escape')tback();e.stopImmediatePropagation()},true);
+addEventListener('keydown',e=>{if(S.device!=='Touch')return;if(/INPUT|TEXTAREA/.test(e.target.tagName)){e.stopImmediatePropagation();return}if(e.key===' '){e.preventDefault();togglePlay()}else if(e.key==='Escape')tback();e.stopImmediatePropagation()},true);
 window.applyDevice=function(){const t=S.device==='Touch';$('#device').style.display=t?'none':'';$('#touch').style.display=t?'block':'none';
   $('.help').innerHTML=t?'Tap the screen like a phone. The round button under the screen goes home. Drag music files anywhere on the page.':HELP;
   stack.length=1;T.stack.length=1;_render();trender()};
 document.body.insertBefore($('#touch'),$('.help'));const HELP=$('.help').innerHTML;applyDevice();
+})();
+</script>
+
+<style>
+.tpower{position:absolute;top:-5px;right:64px;width:46px;height:6px;border-radius:3px 3px 0 0;background:linear-gradient(#bbb,#666);cursor:pointer}
+.thomebg{background:var(--wall);display:flex;flex-direction:column}
+.thomebg .tgrid{flex:1;align-content:start;gap:16px 0;padding-top:16px}
+.tdock{display:grid;grid-template-columns:repeat(4,1fr);padding:9px 6px 7px;background:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.08));border-top:1px solid rgba(255,255,255,.35)}
+@keyframes tpop{from{transform:scale(.86);opacity:0}to{transform:none;opacity:1}}
+.tpage.anim .tcontent{animation:tpop .22s ease-out}
+.tsb{cursor:pointer}
+.tlock{position:absolute;top:20px;left:0;right:0;bottom:0;z-index:20;background:var(--wall);display:flex;flex-direction:column;align-items:center;color:#fff;transition:transform .35s ease-in,opacity .35s}
+.tlock.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
+.lbar{width:100%;background:rgba(0,0,0,.45);text-align:center;padding:8px 0 8px;border-bottom:1px solid rgba(255,255,255,.15)}
+.lt{font-size:52px;font-weight:200;line-height:1.1}.ld{font-size:13px;opacity:.9}
+.lnp{margin:14px 12px;background:rgba(0,0,0,.5);border-radius:10px;padding:8px;display:flex;align-items:center;gap:8px;width:calc(100% - 24px)}
+.lnp .m{flex:1;min-width:0}.lnp b,.lnp small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnp b{font-size:13px}.lnp small{font-size:11px;color:#bbb}
+.lnp button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer;padding:2px}
+.slide{margin-top:auto;width:100%;background:rgba(0,0,0,.55);padding:14px 14px 18px}
+.trk{position:relative;height:46px;border-radius:10px;background:rgba(0,0,0,.6);box-shadow:inset 0 1px 3px #000;display:flex;align-items:center;justify-content:center;font-size:17px}
+.trk span{background:linear-gradient(90deg,#666 0%,#666 40%,#fff 50%,#666 60%,#666 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 2.4s linear infinite;padding-left:40px}
+@keyframes shim{from{background-position:100% 0}to{background-position:-50% 0}}
+.knob{position:absolute;left:3px;top:3px;width:60px;height:40px;border-radius:8px;background:linear-gradient(#fff,#b9b9b9);color:#777;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:grab;touch-action:none;z-index:1}
+.toff{position:absolute;inset:0;background:#000;z-index:40;display:none}.toff.on{display:block}
+.tban{position:absolute;left:6px;right:6px;top:24px;z-index:30;background:rgba(22,22,24,.94);color:#fff;border-radius:10px;padding:8px;display:flex;gap:8px;align-items:center;transform:translateY(-150%);transition:transform .3s;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+.tban.on{transform:none}.tban .tth{width:34px;height:34px}.tban div{min-width:0}
+.tban small{display:block;font-size:9px;color:#aaa;letter-spacing:1px}.tban b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tban span{font-size:11px;color:#ccc}
+.tcc{position:absolute;left:0;right:0;top:20px;z-index:35;background:rgba(18,18,22,.95);color:#fff;padding:12px 14px 8px;transform:translateY(calc(-100% - 40px));transition:transform .3s;border-radius:0 0 16px 16px;box-shadow:0 8px 20px rgba(0,0,0,.6)}
+.tcc.on{transform:none}
+.tcc .r2{display:flex;align-items:center;gap:8px;font-size:14px;margin:6px 0}.tcc input{flex:1;accent-color:#fff}
+.tcc .tg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.tcc .tg button{height:56px;border-radius:12px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font-family:inherit}
+.tcc .tg button span{font-size:18px}.tcc .tg button.on{background:#2f7cf6}
+.tcc .grab{width:36px;height:4px;border-radius:2px;background:#666;margin:10px auto 0}
+.tcalc{background:#000;display:flex;flex-direction:column;justify-content:flex-end;padding:8px}
+.cdisp{color:#fff;font-size:48px;font-weight:200;text-align:right;padding:6px 8px;overflow:hidden;white-space:nowrap}
+.ckeys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ckeys button{height:58px;border-radius:29px;border:0;background:#333;color:#fff;font-size:22px;cursor:pointer;font-family:inherit}
+.ckeys .op{background:#ff9f0a}.ckeys .fn{background:#a5a5a5;color:#000}.ckeys .zero{grid-column:span 2;text-align:left;padding-left:24px}
+.ckeys button:active{filter:brightness(1.35)}
+.tnote{background:#fdf6c9;display:flex;flex-direction:column}
+.tnote textarea{flex:1;border:0;background:repeating-linear-gradient(#fdf6c9 0 23px,#e8dc9a 23px 24px);font:17px/24px "Marker Felt","Noteworthy","Comic Sans MS",cursive;padding:4px 12px;resize:none;outline:none;-webkit-user-select:text;user-select:text;color:#333}
+.tdel{margin:8px;height:36px;border-radius:8px;border:1px solid #922;background:linear-gradient(#f07070,#c0392b);color:#fff;font-weight:700;cursor:pointer}
+.tphotos{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:2px}.tphotos img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer;display:block}
+.tphoto{background:#000;display:flex;align-items:center;justify-content:center}.tphoto img{max-width:100%;max-height:100%;-webkit-user-drag:none;pointer-events:none}
+.tcam{background:#000;display:flex;flex-direction:column}.tcam video{flex:1;min-height:0;width:100%;object-fit:cover}
+.tcambar{height:80px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#111}
+.shutter{width:60px;height:60px;border-radius:50%;border:4px solid #fff;background:#ddd;cursor:pointer}.shutter:active{background:#999}
+.thumbp{width:44px;height:44px;border-radius:6px;border:2px solid #555;background:#222 center/cover;cursor:pointer}
+.flip{width:44px;height:44px;border-radius:50%;border:0;background:#333;color:#fff;font-size:20px;cursor:pointer}
+.tflash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.tflash.go{animation:tfl .35s}@keyframes tfl{from{opacity:.9}to{opacity:0}}
+.wx{min-height:100%;color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px 14px 10px;text-shadow:0 1px 2px rgba(0,0,0,.3)}
+.wc{font-size:22px}.wt{font-size:66px;font-weight:200;line-height:1}.wd{font-size:14px;opacity:.9}
+.wdays{width:100%;margin-top:14px;background:rgba(0,0,0,.18);border-radius:10px;padding:2px 10px}
+.wdays div{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.12)}.wdays div:last-child{border:0}
+.wcities{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:auto;padding-top:12px}
+.wcities button{border:0;border-radius:12px;padding:5px 10px;background:rgba(255,255,255,.22);color:#fff;font-size:11px;cursor:pointer}.wcities button.on{background:#fff;color:#333;text-shadow:none}
+</style>
+<script>
+(function(){
+const {T,tpush,tback,trender,listPage,home,top,musicPage,npPage,cfPage,clockPage,swPage,brickPage,thumb}=TT;
+const scr=$('.tscreen');
+// ---------- settings defaults
+const EQ={Flat:[0,0,0,0,0],'Bass Booster':[7,4,0,0,0],'Bass Reducer':[-6,-3,0,0,0],Rock:[4,2,-1,2,4],Pop:[-1,2,4,2,-1],'Hip Hop':[5,3,0,1,3],Electronic:[4,1,-1,2,5],Vocal:[-2,0,4,3,0],'Treble Booster':[0,0,0,3,7],Loudness:[5,1,0,1,4]};
+const WALLS=['radial-gradient(circle at 30% 20%,#3b6fb6,#14284d 60%,#060b16)','linear-gradient(160deg,#ff9a8b,#ff6a88 45%,#5b247a)','linear-gradient(160deg,#0f2027,#203a43,#2c5364)','radial-gradient(circle at 70% 30%,#f6d365,#fda085 40%,#2b1055)','linear-gradient(160deg,#11998e,#0b5d4f 60%,#04261f)','linear-gradient(160deg,#434343,#000)'];
+if(!EQ[S.eq])S.eq='Flat';if(S.wall==null)S.wall=0;if(S.bright==null)S.bright=100;if(S.city==null)S.city=0;
+const applyWall=()=>$('#touch').style.setProperty('--wall',WALLS[S.wall%WALLS.length]);
+const applyBright=()=>{const f=S.bright>=100?'':`brightness(${.3+.7*S.bright/100})`;$('.screen').style.filter=f;scr.style.filter=f};
+applyWall();applyBright();
+window.cycleEQ=()=>{const k=Object.keys(EQ);S.eq=k[(k.indexOf(S.eq)+1)%k.length];save();applyEQ()};
+window.cycleBright=()=>{S.bright=S.bright<=25?100:S.bright-25;save();applyBright()};
+// ---------- audio graph: equalizer + analyser
+let an=null,eqs=null;
+function graph(){if(an)return;try{actx=actx||new AudioContext();const src=actx.createMediaElementSource(audio);
+  eqs=[60,250,1000,4000,12000].map((f,i)=>{const b=actx.createBiquadFilter();b.type=i===0?'lowshelf':i===4?'highshelf':'peaking';b.frequency.value=f;b.Q.value=1;return b});
+  an=actx.createAnalyser();an.fftSize=256;an.smoothingTimeConstant=.8;let n=src;for(const e of eqs){n.connect(e);n=e}n.connect(an);an.connect(actx.destination);applyEQ()}catch(e){}}
+function applyEQ(){if(eqs)EQ[S.eq].forEach((g,i)=>eqs[i].gain.value=g)}
+audio.addEventListener('play',()=>{graph();if(actx)actx.resume()});
+// ---------- visualizer
+const fb=new Uint8Array(128),tb=new Uint8Array(256);
+function drawViz(c,W,H,mode,t){c.fillStyle='rgba(6,8,20,.35)';c.fillRect(0,0,W,H);
+  if(an){an.getByteFrequencyData(fb);an.getByteTimeDomainData(tb)}else{fb.fill(0);tb.fill(128)}
+  const hueBase=(t/30)%360;
+  if(mode===0){const n=40,bw=W/n;for(let i=0;i<n;i++){const v=fb[Math.floor(i*1.8)]/255,h=Math.max(2,v*H*.85);c.fillStyle=`hsl(${hueBase+i*6},85%,${45+v*20}%)`;c.fillRect(i*bw+1,H-h,bw-2,h);c.fillRect(i*bw+1,H-h-4,bw-2,1.5)}}
+  else if(mode===1){c.lineWidth=2.5;c.strokeStyle=`hsl(${hueBase},90%,60%)`;c.shadowBlur=10;c.shadowColor=c.strokeStyle;c.beginPath();for(let i=0;i<256;i++){const x=i/255*W,y=H/2+(tb[i]-128)/128*H*.45;i?c.lineTo(x,y):c.moveTo(x,y)}c.stroke();c.shadowBlur=0}
+  else{const cx=W/2,cy=H/2,r=Math.min(W,H)*.2,n=64;let avg=0;for(let i=0;i<n;i++)avg+=fb[i];avg/=n*255;
+    c.fillStyle=`hsla(${hueBase},80%,55%,.35)`;c.beginPath();c.arc(cx,cy,r*(.8+avg*.6),0,7);c.fill();
+    for(let i=0;i<n;i++){const a=i/n*Math.PI*2-Math.PI/2,v=fb[i]/255,l=6+v*Math.min(W,H)*.32;c.strokeStyle=`hsl(${hueBase+i*5},90%,60%)`;c.lineWidth=3;c.beginPath();c.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);c.lineTo(cx+Math.cos(a)*(r+l),cy+Math.sin(a)*(r+l));c.stroke()}}
+  if(!cur()||audio.paused){c.fillStyle='rgba(255,255,255,.55)';c.font='12px sans-serif';c.textAlign='center';c.fillText(cur()?'Paused':'Play a song to see it move',W/2,18);c.textAlign='left'}}
+window.vizView=()=>({type:'viz',title:'Visualizer',canvas:true,mode:0,render(){return'<canvas id="cv" width="304" height="206"></canvas>'},
+  mount(){const c=$('#cv').getContext('2d');const loop=t=>{if(view()!==this||S.device==='Touch')return;drawViz(c,304,206,this.mode,t);requestAnimationFrame(loop)};requestAnimationFrame(loop)},
+  onSelect(){this.mode=(this.mode+1)%3}});
+function vizPage(){const p={nav:true,title:'Visualizer',cls:'tgame',noRefresh:true,mode:0,html(){return'<canvas width="304" height="330"></canvas><p>Tap to change style · EQ: '+esc(S.eq)+'</p>'},
+  bind(el){const cv=el.querySelector('canvas'),c=cv.getContext('2d');const loop=t=>{if(top()!==p||S.device!=='Touch')return;drawViz(c,304,330,p.mode,t);requestAnimationFrame(loop)};requestAnimationFrame(loop);cv.onclick=()=>p.mode=(p.mode+1)%3}};return p}
+const eqPage=()=>listPage('Equalizer',()=>Object.keys(EQ).map(k=>({main:k,val:k===S.eq?'✓':'',go:()=>{S.eq=k;save();applyEQ();trender()}})));
+// ---------- calculator
+function calcPage(){let cv='0',acc=null,op=null,fresh=true;
+  const calc=(a,b,o)=>o==='+'?a+b:o==='−'?a-b:o==='×'?a*b:a/b,fmtN=n=>isFinite(n)?String(+n.toPrecision(10)):'Error';
+  function key(k){if(/\d/.test(k)){cv=fresh||cv==='0'?k:cv.length<12?cv+k:cv;fresh=false}
+    else if(k==='.'){if(fresh){cv='0.';fresh=false}else if(!cv.includes('.'))cv+='.'}
+    else if(k==='C'){cv='0';acc=null;op=null;fresh=true}
+    else if(k==='±')cv=fmtN(-parseFloat(cv));else if(k==='%')cv=fmtN(parseFloat(cv)/100);
+    else{const v=parseFloat(cv);if(k==='='){if(op!=null&&acc!=null)cv=fmtN(calc(acc,v,op));acc=null;op=null}else{acc=op&&!fresh?calc(acc,v,op):v;cv=fmtN(acc);op=k}fresh=true}}
+  return{nav:true,title:'Calculator',cls:'tcalc',html(){return`<div class="cdisp">${cv}</div><div class="ckeys">`+['C','±','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','='].map(k=>`<button class="${/[÷×−+=]/.test(k)?'op':/[C±%]/.test(k)?'fn':''}${k==='0'?' zero':''}" data-k="${k}">${k}</button>`).join('')+'</div>'},
+    bind(el){el.querySelectorAll('.ckeys button').forEach(b=>b.onclick=()=>{key(b.dataset.k);el.querySelector('.cdisp').textContent=cv})}}}
+// ---------- notes
+let notes=[];try{notes=JSON.parse(localStorage.getItem('cwp-notes')||'[]')}catch(e){}
+const saveNotes=()=>{try{localStorage.setItem('cwp-notes',JSON.stringify(notes))}catch(e){}};
+const notesPage=()=>listPage('Notes',()=>[{main:'＋ New Note',go:()=>{const n={text:'',t:Date.now()};notes.unshift(n);saveNotes();return notePage(n)}},
+  ...notes.map(n=>({main:n.text.split('\n')[0]||'New Note',sub:new Date(n.t).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}),ch:1,go:()=>notePage(n)}))]);
+function notePage(n){return{nav:true,title:'Note',cls:'tnote',noRefresh:true,html(){return`<textarea placeholder="Type a note…">${esc(n.text)}</textarea><button class="tdel">Delete Note</button>`},
+  bind(el){const ta=el.querySelector('textarea');ta.oninput=()=>{n.text=ta.value;n.t=Date.now();saveNotes()};el.querySelector('.tdel').onclick=()=>{notes.splice(notes.indexOf(n),1);saveNotes();tback()};setTimeout(()=>ta.focus(),60)}}}
+// ---------- photos + camera
+const photos=[];
+const _add=addFiles;addFiles=function(files){const all=[...files],imgs=all.filter(f=>f.type.startsWith('image'));imgs.forEach(f=>photos.unshift(URL.createObjectURL(f)));
+  if(imgs.length)toast(imgs.length+' photo'+(imgs.length>1?'s':'')+' added');const rest=all.filter(f=>!f.type.startsWith('image'));if(rest.length||!imgs.length)_add(rest);else if(S.device==='Touch'&&!top().noRefresh)trender()};
+function photosPage(){return{nav:true,title:'Photos',html(){return photos.length?`<div class="tphotos">${photos.map((u,i)=>`<img src="${u}" data-i="${i}">`).join('')}</div>`:`<div class="tempty"><b>No photos</b>Take one with Camera, or drop images onto the page.</div>`},
+  bind(el){el.querySelectorAll('img').forEach(im=>im.onclick=()=>tpush(photoPage(+im.dataset.i)))}}}
+function photoPage(i){return{nav:true,title:(i+1)+' of '+photos.length,cls:'tphoto',html(){return`<img src="${photos[i]}">`},
+  bind(el){let x0=0;el.onpointerdown=e=>x0=e.clientX;el.onpointerup=e=>{const dx=e.clientX-x0;if(Math.abs(dx)>30){const j=i+(dx<0?1:-1);if(j>=0&&j<photos.length){T.stack[T.stack.length-1]=photoPage(j);trender()}}}}}}
+let stream=null;const stopCam=()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}};
+function camPage(){const p={nav:true,title:'Camera',cls:'tcam',noRefresh:true,facing:'user',
+  html(){return`<video autoplay playsinline muted></video><div class="tcambar"><button class="thumbp" title="Photos"></button><button class="shutter" title="Take photo"></button><button class="flip" title="Flip camera">⟲</button></div><div class="tflash"></div>`},
+  bind(el){const v=el.querySelector('video'),th=el.querySelector('.thumbp');
+    const start=async()=>{stopCam();try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:p.facing},audio:false});if(top()!==p){stopCam();return}v.srcObject=stream;v.style.transform=p.facing==='user'?'scaleX(-1)':''}
+      catch(e){v.outerHTML='<div class="tempty" style="flex:1"><b style="color:#eee">Camera unavailable</b>Allow camera access in your browser to take photos.</div>'}};
+    start();const setTh=()=>{th.style.backgroundImage=photos[0]?`url(${photos[0]})`:''};setTh();
+    el.querySelector('.shutter').onclick=()=>{if(!v.videoWidth)return;const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');
+      if(p.facing==='user'){x.translate(c.width,0);x.scale(-1,1)}x.drawImage(v,0,0);photos.unshift(c.toDataURL('image/jpeg',.85));setTh();const f=el.querySelector('.tflash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go')};
+    el.querySelector('.flip').onclick=()=>{p.facing=p.facing==='user'?'environment':'user';start()};th.onclick=()=>tpush(photosPage())}};return p}
+// ---------- weather (Open-Meteo, preset cities only)
+const CITIES=[['London',51.51,-0.13],['New York',40.71,-74.01],['Tokyo',35.68,139.69],['Paris',48.85,2.35],['Sydney',-33.87,151.21],['Dubai',25.2,55.27]];
+const WX=c=>c===0?['☀️','Clear']:c<=2?['🌤','Partly Cloudy']:c===3?['☁️','Cloudy']:c<=48?['🌫','Fog']:c<=57?['🌦','Drizzle']:c<=67?['🌧','Rain']:c<=77?['🌨','Snow']:c<=82?['🌧','Showers']:c<=86?['🌨','Snow Showers']:['⛈','Thunderstorm'];
+const wxc={};
+function wxPage(){const p={nav:true,title:'Weather',html(){const [n,la,lo]=CITIES[S.city%CITIES.length],d=wxc[n];
+    if(!d){wxc[n]='loading';fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=5`)
+      .then(r=>r.json()).then(j=>{wxc[n]=j.current?j:'err'}).catch(()=>{wxc[n]='err'}).then(()=>{if(top()===p)trender()})}
+    const cities=`<div class="wcities">${CITIES.map((c,i)=>`<button data-c="${i}" class="${i===S.city%CITIES.length?'on':''}">${c[0]}</button>`).join('')}</div>`;
+    if(!d||d==='loading')return`<div class="wx" style="background:linear-gradient(#4a90d9,#1f4f8a)"><div class="wc">${n}</div><div class="wd" style="margin-top:40px">Loading…</div>${cities}</div>`;
+    if(d==='err')return`<div class="wx" style="background:linear-gradient(#777,#333)"><div class="wc">${n}</div><div class="wd" style="margin-top:40px">Couldn't load the weather.<br>Check your connection.</div>${cities}</div>`;
+    const c=d.current,[ic,txt]=WX(c.weather_code),bg=c.is_day?'linear-gradient(#4a90d9,#1f4f8a)':'linear-gradient(#1c2541,#0b0c1e)',dd=d.daily;
+    return`<div class="wx" style="background:${bg}"><div class="wc">${n}</div><div class="wt">${Math.round(c.temperature_2m)}°</div><div class="wd">${ic} ${txt}</div>
+      <div class="wdays">${dd.time.map((t,i)=>`<div><span>${i?new Date(t+'T12:00').toLocaleDateString([],{weekday:'long'}):'Today'}</span><span>${WX(dd.weather_code[i])[0]}</span><span>${Math.round(dd.temperature_2m_max[i])}° / ${Math.round(dd.temperature_2m_min[i])}°</span></div>`).join('')}</div>${cities}</div>`},
+  bind(el){el.querySelectorAll('.wcities button').forEach(b=>b.onclick=()=>{S.city=+b.dataset.c;save();trender()})}};return p}
+// ---------- settings
+const setPage=()=>listPage('Settings',()=>[
+  {main:'Wallpaper',val:(S.wall%WALLS.length+1)+' of '+WALLS.length,go:()=>{S.wall=(S.wall+1)%WALLS.length;save();applyWall();trender()}},
+  {main:'Brightness',val:S.bright+'%',go:()=>{cycleBright();trender()}},
+  {main:'Equalizer',val:S.eq,ch:1,go:eqPage},
+  {main:'Shuffle',val:S.shuffle?'On':'Off',go:()=>{S.shuffle=!S.shuffle;save();trender()}},
+  {main:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();trender()}},
+  {main:'Device',val:'Touch',go:()=>{S.device='Classic';save();applyDevice()}},
+  {main:'Lock Now',go:()=>{lockNow()}},
+  {main:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');trender()}}]);
+// ---------- home screen with dock
+const A=(n,g,c,f)=>[n,g,c,f];
+const grid=[A('Cover Flow','💿','#555,#111',cfPage),A('Clock','🕒','#3a3a3a,#000',clockPage),A('Stopwatch','⏱','#f7a531,#d35400',swPage),A('Brick','🧱','#2bc48a,#11785a',brickPage),
+  A('Calculator','🧮','#ffb347,#e06d00',calcPage),A('Notes','📝','#fff3a8,#e8c33a',notesPage),A('Camera','📷','#9aa4ad,#4a535c',camPage),A('Weather','⛅','#6ec6ff,#1e6fd9',wxPage),
+  A('Visualizer','🌈','#ff5fa2,#7b2ff7',vizPage),A('Equalizer','🎚','#e0e0e0,#8a8a8a',eqPage),A('Add Music','＋','#b39ddb,#6a4cc2',()=>{$('#file').click()})];
+const dock=[A('Music','♫','#ff7a59,#d6246e',musicPage),A('Now Playing','▶','#4facfe,#1d4ed8',npPage),A('Photos','🌻','#ffe259,#ffa751',photosPage),A('Settings','⚙️','#c3cad1,#6c7a89',setPage)];
+const icon=(a,k)=>`<button class="tapp" data-k="${k}"><i style="background:linear-gradient(${a[2]})">${a[1]}</i>${a[0]}</button>`;
+home.html=()=>`<div class="tgrid">${grid.map((a,i)=>icon(a,'g'+i)).join('')}</div><div class="tdock">${dock.map((a,i)=>icon(a,'d'+i)).join('')}</div>`;
+home.bind=el=>el.querySelectorAll('.tapp').forEach(b=>b.onclick=()=>{const k=b.dataset.k,a=(k[0]==='g'?grid:dock)[+k.slice(1)];tpush(a[3]())});
+// ---------- lock screen, sleep, banner, control center
+const mk=c=>{const d=document.createElement('div');d.className=c;scr.appendChild(d);return d};
+const lock=mk('tlock'),ban=mk('tban'),cc=mk('tcc'),off=mk('toff');
+const pw=document.createElement('div');pw.className='tpower';pw.title='Sleep / Wake';$('#touch').appendChild(pw);
+let locked=true,dragging=false;
+function renderLock(){if(dragging)return;const t=cur();
+  lock.innerHTML=`<div class="lbar"><div class="lt"></div><div class="ld"></div></div>`+(t?`<div class="lnp">${thumb(t,t.album)}<div class="m"><b>${esc(t.title)}</b><small>${esc(t.artist)}</small></div><button data-a="prev">⏮</button><button data-a="play">${audio.paused?'▶':'⏸'}</button><button data-a="next">⏭</button></div>`:'')+
+    `<div class="slide"><div class="trk"><div class="knob">➜</div><span>slide to unlock</span></div></div>`;
+  lockTime();lock.querySelectorAll('.lnp button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;a==='play'?togglePlay():a==='next'?next(false):prev()});
+  const k=lock.querySelector('.knob'),trk=lock.querySelector('.trk');let x0=0,x=0;const max=()=>trk.clientWidth-66;
+  k.onpointerdown=e=>{k.setPointerCapture(e.pointerId);dragging=true;x0=e.clientX-x;k.style.transition='none'};
+  k.onpointermove=e=>{if(!dragging)return;x=Math.min(max(),Math.max(0,e.clientX-x0));k.style.transform=`translateX(${x}px)`;trk.querySelector('span').style.opacity=1-x/max()};
+  k.onpointerup=()=>{dragging=false;k.style.transition='transform .25s';if(x>max()*.85){unlock()}else{x=0;k.style.transform='';trk.querySelector('span').style.opacity=1}}}
+function lockTime(){const n=new Date(),a=lock.querySelector('.lt'),b=lock.querySelector('.ld');if(a){a.textContent=n.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});b.textContent=n.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})}}
+function unlock(){locked=false;lock.classList.add('hide');trender()}
+function lockNow(){locked=true;cc.classList.remove('on');lock.classList.remove('hide');renderLock()}
+pw.onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow()}else{off.classList.add('on');lockNow()}};
+$('#thomebtn').onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow();return}if(locked)return;if(cc.classList.contains('on')){cc.classList.remove('on');return}T.stack.length=1;trender()};
+const _load=load;load=function(){_load();const t=cur();if(t&&S.device==='Touch'&&!off.classList.contains('on')&&(locked||top().title!=='Now Playing')){
+  ban.innerHTML=`${thumb(t,t.album)}<div><small>NOW PLAYING</small><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></div>`;ban.classList.add('on');clearTimeout(ban.t);ban.t=setTimeout(()=>ban.classList.remove('on'),2600)}};
+function renderCC(){cc.innerHTML=`<div class="r2">☀︎<input type="range" class="ccb" min="25" max="100" value="${S.bright}">☀️</div><div class="r2">🔈<input type="range" class="ccv" min="0" max="100" value="${Math.round(audio.volume*100)}">🔊</div>
+  <div class="tg"><button data-a="play"><span>${audio.paused?'▶':'⏸'}</span>${audio.paused?'Play':'Pause'}</button><button data-a="sh" class="${S.shuffle?'on':''}"><span>🔀</span>Shuffle</button><button data-a="rp" class="${S.repeat!=='Off'?'on':''}"><span>${S.repeat==='One'?'🔂':'🔁'}</span>Repeat ${S.repeat==='Off'?'':S.repeat}</button><button data-a="eq" class="${S.eq!=='Flat'?'on':''}"><span>🎚</span>${esc(S.eq)}</button>
+  <button data-a="wall"><span>🖼</span>Wallpaper</button><button data-a="viz"><span>🌈</span>Visualizer</button><button data-a="cam"><span>📷</span>Camera</button><button data-a="lock"><span>🔒</span>Lock</button></div><div class="grab"></div>`;
+  cc.querySelector('.ccb').oninput=e=>{S.bright=+e.target.value;save();applyBright()};cc.querySelector('.ccv').oninput=e=>{audio.volume=e.target.value/100};
+  cc.querySelectorAll('.tg button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
+    if(a==='play')togglePlay();else if(a==='sh'){S.shuffle=!S.shuffle;save()}else if(a==='rp'){S.repeat={Off:'All',All:'One',One:'Off'}[S.repeat];save()}else if(a==='eq')cycleEQ();
+    else if(a==='wall'){S.wall=(S.wall+1)%WALLS.length;save();applyWall()}else if(a==='lock'){lockNow();return}
+    else{cc.classList.remove('on');tpush(a==='viz'?vizPage():camPage());return}renderCC();if(!top().noRefresh)trender()});
+  cc.querySelector('.grab').onclick=()=>cc.classList.remove('on')}
+$('.tsb').onclick=()=>{if(locked)return;renderCC();cc.classList.toggle('on')};
+// ---------- hooks
+const _r=render;render=function(){_r();if(S.device==='Touch'&&locked&&!lock.classList.contains('hide'))renderLock()};
+const _ad=window.applyDevice;window.applyDevice=function(){_ad();if(S.device==='Touch')lockNow();else stopCam()};
+setInterval(()=>{lockTime();if(stream&&(S.device!=='Touch'||top().cls!=='tcam'||locked))stopCam()},1000);
+renderCC();renderLock();if(S.device!=='Touch')lock.classList.add('hide');else lock.classList.remove('hide');
 })();
 </script>
 
