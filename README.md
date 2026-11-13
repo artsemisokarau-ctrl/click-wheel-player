@@ -1,25 +1,21 @@
-# Click Wheel Player
+# iPhone History
 
-A music player that runs in the browser, with three devices: Click Wheel, Touch Player and Phone. Switch with the buttons under the device (or Settings → Device).
+A fan-made history of every iPhone generation, 2007 to 2025, with playable phones from each design era.
 
-**Play it:** https://artsemisokarau-ctrl.github.io/click-wheel-player/
+**Visit:** https://artsemisokarau-ctrl.github.io/click-wheel-player/
 
-Drag audio files (and images, for Photos) anywhere on the page.
+## What's inside
+- **Timeline** (`index.html`): every generation grouped into four eras, with to-scale drawings, launch prices, specs, headline features, fun facts and what changed from the model before.
+- **Compare**: pick any two generations to see them side by side (or stacked) with differences highlighted.
+- **Software**: every major software release in one strip.
+- **Play the eras**:
+  - 2007: the original-style phone (`player.html?device=Phone`)
+  - 2013: flat design with a home button and Control Center from the bottom (`era.html?e=flat`)
+  - 2017: the notch, swipe-up gestures and Face ID style unlock (`era.html?e=notch`)
+  - 2022: Dynamic Island with live music and timer activities (`era.html?e=island`)
 
-## Classic
-Click wheel, Cover Flow, shuffle/repeat, EQ presets, music visualizer, clock, stopwatch, Brick game, case color and brightness.
+Each playable phone has a lock screen, home screen, Control Center, and working apps: Music (built-in demo songs plus your own files), Clock with timer, Calculator, Notes, Messages with a chat bot, Weather (Open-Meteo), Camera and Photos.
 
-## Touch
-- Lock screen with slide to unlock and music controls; sleep/wake button on top
-- Home screen with app icons and a dock, plus 6 wallpapers
-- Control center (tap the status bar): brightness, volume, shuffle, repeat, EQ, shortcuts
-- "Now playing" notification banners
-- Apps: Music, Now Playing, Cover Flow, Photos, Camera, Weather, Calculator, Notes, Visualizer, Equalizer, Clock, Stopwatch, Brick
+The original click-wheel music player still lives in `player.html`.
 
-## First-gen Phone
-A 2007-style phone with a silver rim, Carrier/EDGE status bar, a Phone app (keypad with real dial tones, pretend calls, recents) and Messages (glossy bubbles, a Buddy chat bot that answers questions and tells jokes).
-
-## Animations
-Apps zoom out of their icons and back, screens slide inside apps, icons fly in after unlocking, long-press makes icons wiggle, the lock screen splits apart, devices flip when you switch, and the click wheel menus slide.
-
-Weather comes from the free Open-Meteo API for a few preset cities. Music, photos and camera shots stay in your browser and are never uploaded.
+Not affiliated with Apple. Prices are US launch prices for the base model; sizes are approximate.

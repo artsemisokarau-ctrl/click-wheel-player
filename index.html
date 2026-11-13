@@ -3,804 +3,262 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Click Wheel Player</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+<title>iPhone History</title>
+<meta name="description" content="Every iPhone generation from 2007 to 2025: specs, prices, what changed, side-by-side comparisons and playable phones from each era.">
 <style>
-:root{--bg1:#dfe4ea;--bg2:#aeb7c2;--txt:#333}
-*{box-sizing:border-box;-webkit-user-select:none;user-select:none}
-html,body{margin:0;height:100%}
-body{background:radial-gradient(circle at 50% 30%,var(--bg1),var(--bg2));font-family:-apple-system,"Helvetica Neue",Helvetica,Arial,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;color:var(--txt);min-height:100vh}
-.device{width:340px;height:570px;border-radius:34px;padding:18px;position:relative;
-  background:linear-gradient(160deg,#ffffff,#eef0f2 45%,#dcdfe3);box-shadow:0 30px 60px rgba(0,0,0,.35),inset 0 2px 2px #fff,inset 0 -3px 6px rgba(0,0,0,.12);transition:background .4s}
-.device.black{background:linear-gradient(160deg,#3a3a3c,#1b1b1d 50%,#0c0c0d);box-shadow:0 30px 60px rgba(0,0,0,.5),inset 0 1px 1px #555}
-.screen{width:304px;height:228px;border-radius:6px;overflow:hidden;position:relative;background:#fff;
-  box-shadow:0 0 0 3px #222,0 0 0 4px #888,inset 0 0 8px rgba(0,0,0,.2)}
-.hdr{height:22px;background:linear-gradient(#fdfdfd,#cfd6de);border-bottom:1px solid #8a95a3;display:flex;align-items:center;justify-content:space-between;padding:0 6px;font-size:12px;font-weight:700;color:#222}
-.hdr .t{position:absolute;left:50px;right:50px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bat{width:22px;height:10px;border:1px solid #444;border-radius:2px;position:relative;padding:1px}
-.bat:after{content:"";position:absolute;right:-3px;top:2px;width:2px;height:4px;background:#444}
-.bat i{display:block;height:100%;width:80%;background:linear-gradient(#9be36a,#3c9b16)}
-.body{position:absolute;top:22px;left:0;right:0;bottom:0;overflow:hidden}
-.row{height:29px;display:flex;align-items:center;justify-content:space-between;padding:0 18px 0 8px;font-size:15px;font-weight:600;color:#111;white-space:nowrap}
-.row span{overflow:hidden;text-overflow:ellipsis}
-.row em{font-style:normal;color:#666;font-weight:500;font-size:13px}
-.row.sel{background:linear-gradient(#5ea8f3,#1f6bd6);color:#fff}
-.row.sel em{color:#e6f0ff}
-.row b{font-size:18px;font-weight:700}
-.sb{position:absolute;right:2px;top:2px;bottom:2px;width:8px;border:1px solid #889;border-radius:4px;background:#eef}
-.sb i{position:absolute;left:1px;right:1px;border-radius:3px;background:linear-gradient(90deg,#6aa5ea,#2c6bc5)}
-.np{display:flex;padding:14px 12px;gap:12px;height:100%}
-.art{width:116px;height:116px;flex:none;border-radius:2px;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);font-size:44px;box-shadow:0 2px 6px rgba(0,0,0,.4);-webkit-box-reflect:below 2px linear-gradient(transparent 60%,rgba(255,255,255,.35))}
-.meta{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:3px}
-.meta .c{font-size:11px;color:#666}
-.meta .ti{font-size:15px;font-weight:700;color:#111}
-.meta .ar,.meta .al{font-size:13px;color:#444}
-.meta div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.prog{position:absolute;left:12px;right:12px;bottom:10px}
-.bar{height:9px;border:1px solid #777;background:linear-gradient(#fff,#ddd);border-radius:1px;position:relative;overflow:hidden}
-.bar i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(#7fb8f5,#1f64c9)}
-.bar.scrub i{background:none;border-right:3px solid #1f64c9}
-.times{display:flex;justify-content:space-between;font-size:11px;color:#333;margin-top:2px;font-weight:600}
-.empty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#555;font-size:13px;gap:6px;padding:20px}
-.empty b{font-size:15px;color:#222}
-.cf{position:absolute;inset:0;background:linear-gradient(#000 0%,#1a1a1a 100%);perspective:500px;overflow:hidden}
-.cf .it{position:absolute;top:28px;left:50%;width:110px;height:110px;margin-left:-55px;transition:transform .25s,z-index .25s;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:40px;color:rgba(255,255,255,.85);-webkit-box-reflect:below 1px linear-gradient(transparent 55%,rgba(255,255,255,.3))}
-.cf .lab{position:absolute;bottom:10px;left:0;right:0;text-align:center;color:#fff;font-size:13px;font-weight:700}
-.cf .lab small{display:block;font-weight:500;color:#aaa;font-size:11px}
-.big{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
-.big .tm{font-size:54px;font-weight:200;letter-spacing:1px;color:#111;font-variant-numeric:tabular-nums}
-.big .sub{font-size:13px;color:#555}
-canvas{display:block}
-.toast{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:rgba(0,0,0,.78);color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;white-space:nowrap;opacity:0;transition:opacity .25s;pointer-events:none;z-index:5}
-.toast.on{opacity:1}
-.vol{position:absolute;left:12px;right:12px;bottom:10px;display:flex;align-items:center;gap:6px;font-size:12px}
-.vol .bar{flex:1}
-.wheel{width:228px;height:228px;border-radius:50%;position:absolute;left:50%;bottom:34px;margin-left:-114px;touch-action:none;cursor:grab;
-  background:radial-gradient(circle at 50% 40%,#fbfbfb,#e6e8eb 70%,#d8dbdf);box-shadow:inset 0 2px 4px rgba(0,0,0,.18),0 1px 1px #fff}
-.black .wheel{background:radial-gradient(circle at 50% 40%,#5b5b5f,#3c3c40 70%,#2c2c2f);box-shadow:inset 0 2px 4px rgba(0,0,0,.6),0 1px 0 #444}
-.wheel .lbl{position:absolute;font-size:13px;font-weight:700;color:#b6bac0;pointer-events:none;letter-spacing:.5px}
-.black .wheel .lbl{color:#d0d0d4}
-.l-m{top:16px;left:0;right:0;text-align:center}
-.l-p{bottom:14px;left:0;right:0;text-align:center}
-.l-l{left:18px;top:50%;transform:translateY(-50%)}
-.l-r{right:18px;top:50%;transform:translateY(-50%)}
-.center{position:absolute;width:86px;height:86px;border-radius:50%;left:50%;top:50%;margin:-43px 0 0 -43px;cursor:pointer;
-  background:linear-gradient(#fdfdfd,#e2e4e7);box-shadow:0 1px 3px rgba(0,0,0,.25),inset 0 1px 0 #fff}
-.black .center{background:linear-gradient(#3a3a3d,#202022);box-shadow:0 1px 3px rgba(0,0,0,.6),inset 0 1px 0 #555}
-.center:active{filter:brightness(.93)}
-.drop{position:fixed;inset:0;background:rgba(30,100,210,.25);border:4px dashed #1f6bd6;display:none;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#0e3f8a;z-index:10}
-.drop.on{display:flex}
-.help{font-size:12px;color:#4a525c;text-align:center;line-height:1.6;max-width:360px}
-.help kbd{background:#fff;border:1px solid #bbb;border-radius:3px;padding:0 4px;font-size:11px}
+:root{--bg:#0b0c10;--bg2:#13151c;--card:#171a22;--line:#272b36;--txt:#eef0f5;--mut:#9aa1b2;--acc:#5aa9ff;--good:#4ade80;
+  --e1:#f5b544;--e2:#38bdf8;--e3:#a78bfa;--e4:#f472b6}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.55 -apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--acc)}
+.wrap{max-width:1100px;margin:0 auto;padding:0 20px}
+/* hero */
+.hero{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 20px 40px;position:relative;overflow:hidden}
+.hero:before{content:"";position:absolute;inset:-20%;background:radial-gradient(circle at 30% 30%,rgba(90,169,255,.18),transparent 45%),radial-gradient(circle at 75% 60%,rgba(244,114,182,.14),transparent 45%);animation:drift 18s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translate(4%,-3%) scale(1.05)}}
+.hero h1{font-size:clamp(44px,9vw,104px);line-height:1;margin:0;letter-spacing:-2px;font-weight:800;position:relative;background:linear-gradient(120deg,#fff 30%,#9cc8ff 60%,#f6a9d2);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:600px;color:var(--mut);font-size:clamp(16px,2.3vw,20px);position:relative}
+.parade{display:flex;align-items:flex-end;gap:clamp(4px,1vw,12px);margin:34px 0 26px;position:relative;flex-wrap:nowrap;max-width:100%;overflow:hidden;padding:0 10px}
+.parade svg{flex:none;opacity:0;transform:translateY(30px);animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards;cursor:pointer;transition:transform .25s}
+.parade svg:hover{transform:translateY(-8px)!important}
+@keyframes rise{to{opacity:1;transform:none}}
+.cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;position:relative}
+.btn{display:inline-block;padding:12px 22px;border-radius:999px;background:#fff;color:#000;font-weight:700;text-decoration:none;border:0;cursor:pointer;font-size:15px;transition:transform .15s}
+.btn:hover{transform:scale(1.04)}.btn.ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2)}
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(11,12,16,.8);backdrop-filter:saturate(180%) blur(14px);-webkit-backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:8px;height:56px;overflow-x:auto;scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+nav b{margin-right:8px;white-space:nowrap}
+nav a{flex:none;color:var(--mut);text-decoration:none;font-size:14px;padding:6px 12px;border-radius:999px;transition:background .2s,color .2s}
+nav a:hover,nav a.on{color:#fff;background:rgba(255,255,255,.1)}
+section{padding:70px 0 30px}
+h2{font-size:clamp(30px,5vw,46px);letter-spacing:-1px;margin:0 0 6px}
+.sub{color:var(--mut);margin:0 0 30px;max-width:680px}
+/* timeline */
+.era{margin:40px 0 10px;display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.era h3{margin:0;font-size:26px}.era span{color:var(--mut);font-size:14px}
+.era i{width:12px;height:12px;border-radius:50%;display:inline-block}
+.tl{position:relative;padding-left:28px}
+.tl:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(var(--line),var(--line))}
+.card{position:relative;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;display:grid;grid-template-columns:110px 1fr;gap:18px;cursor:pointer;transition:transform .25s,border-color .25s,background .25s;opacity:0;transform:translateY(24px)}
+.card.in{opacity:1;transform:none;transition:opacity .6s,transform .6s cubic-bezier(.2,.8,.2,1),border-color .25s,background .25s}
+.card:hover{border-color:#3a4050;background:#1b1f29}
+.card:before{content:"";position:absolute;left:-26px;top:30px;width:12px;height:12px;border-radius:50%;background:var(--dot);box-shadow:0 0 0 4px var(--bg)}
+.card .pic{display:flex;align-items:flex-end;justify-content:center}
+.card h4{margin:0;font-size:22px;letter-spacing:-.3px}
+.card .date{color:var(--mut);font-size:13px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.chip{font-size:12px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#cfd5e2}
+.chip.hl{background:rgba(90,169,255,.16);color:#a9d1ff}
+.card ul{margin:6px 0 0;padding-left:18px;color:#cfd5e2;font-size:14px}
+.more{font-size:13px;color:var(--acc);margin-top:8px}
+/* drawer */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:50;opacity:0;pointer-events:none;transition:opacity .3s}
+.ov.on{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--bg2);border-left:1px solid var(--line);z-index:51;transform:translateX(100%);transition:transform .45s cubic-bezier(.2,.8,.2,1);overflow-y:auto;padding:24px}
+.drawer.on{transform:none}
+.drawer .x{position:sticky;top:0;float:right;width:36px;height:36px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer}
+.drawer h3{font-size:32px;margin:6px 0 2px;letter-spacing:-.5px}
+.dpic{display:flex;justify-content:center;gap:16px;align-items:flex-end;margin:20px 0;padding:20px;background:radial-gradient(circle at 50% 30%,#232838,#141720);border-radius:18px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td{padding:9px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+td:first-child{color:var(--mut);width:36%}
+.new{color:var(--good)}
+.drawer h5{margin:22px 0 6px;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+.nav2{display:flex;justify-content:space-between;margin-top:22px;gap:10px}
+.nav2 button{flex:1;padding:10px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:#fff;cursor:pointer;font-size:14px}
+.nav2 button:disabled{opacity:.3;cursor:default}
+/* compare */
+.cmp{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px}
+.sel{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}
+select{width:100%;padding:12px;border-radius:12px;background:#0f1117;color:#fff;border:1px solid var(--line);font-size:15px}
+.vs{color:var(--mut);font-weight:700}
+.stage{display:flex;justify-content:center;align-items:flex-end;gap:40px;padding:28px 10px;min-height:300px;position:relative}
+.stage .lbl{text-align:center;font-size:13px;color:var(--mut);margin-top:8px}
+.stage svg{transition:all .5s cubic-bezier(.2,.8,.2,1)}
+.ovl{display:flex;justify-content:center;margin-top:-10px}
+.ovl label{font-size:13px;color:var(--mut);display:flex;gap:6px;align-items:center;cursor:pointer}
+.ctab td{text-align:center}.ctab td:first-child{text-align:left}
+.ctab .d{background:rgba(90,169,255,.08)}
+/* eras play */
+.plays{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.play{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;text-decoration:none;color:var(--txt);display:flex;flex-direction:column;gap:6px;transition:transform .25s,border-color .25s;position:relative;overflow:hidden}
+.play:hover{transform:translateY(-4px);border-color:var(--c)}
+.play:after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:var(--c);opacity:.15;filter:blur(10px)}
+.play b{font-size:20px}.play span{color:var(--mut);font-size:14px}.play em{font-style:normal;color:var(--c);font-weight:700;font-size:14px;margin-top:auto}
+.play .pic{height:130px;display:flex;align-items:flex-end;justify-content:center;margin-bottom:6px}
+/* os strip */
+.os{display:flex;gap:10px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory}
+.os div{flex:none;width:200px;scroll-snap-align:start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px}
+.os b{display:block;font-size:18px}.os small{color:var(--mut)}
+.os p{margin:6px 0 0;font-size:13px;color:#cfd5e2}
+footer{color:var(--mut);font-size:13px;padding:50px 0 60px;border-top:1px solid var(--line);margin-top:60px}
+@media (max-width:640px){.card{grid-template-columns:70px 1fr;gap:12px;padding:14px}.sel{grid-template-columns:1fr}.vs{text-align:center}.stage{gap:16px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.card{opacity:1;transform:none}.parade svg{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-<div class="device" id="device">
-  <div class="screen">
-    <div class="hdr"><span id="hplay"></span><span class="t" id="htitle"></span><span class="bat"><i></i></span></div>
-    <div class="body" id="body"></div>
-    <div class="toast" id="toast"></div>
-  </div>
-  <div class="wheel" id="wheel">
-    <span class="lbl l-m">MENU</span><span class="lbl l-p">▶❙❙</span>
-    <span class="lbl l-l">◀◀</span><span class="lbl l-r">▶▶</span>
-    <div class="center" id="center"></div>
-  </div>
-</div>
-<div class="help">Drag music files anywhere on the page. Drag in a circle on the wheel to scroll.<br>
-Keys: <kbd>↑</kbd><kbd>↓</kbd> scroll · <kbd>Enter</kbd> select · <kbd>Esc</kbd> menu · <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> prev/next</div>
-<div class="drop" id="drop">Drop to add music ♪</div>
-<input type="file" id="file" accept="audio/*" multiple hidden>
+<header class="hero">
+  <h1>iPhone History</h1>
+  <p>Every generation from the 2007 original to the 2025 lineup. What each one added, what it cost, and how it changed the phone in your pocket.</p>
+  <div class="parade" id="parade"></div>
+  <div class="cta"><a class="btn" href="#timeline">Explore the timeline</a><a class="btn ghost" href="#play">Play the eras</a></div>
+</header>
+<nav><div class="wrap" id="nav"><b>📱 History</b></div></nav>
+<main class="wrap">
+  <section id="timeline">
+    <h2>The timeline</h2>
+    <p class="sub">Tap any generation for the full specs and what changed from the one before. Drawings are to scale with each other.</p>
+    <div id="tl"></div>
+  </section>
+  <section id="compare">
+    <h2>Compare any two</h2>
+    <p class="sub">Pick two generations to see them side by side, at real relative size.</p>
+    <div class="cmp">
+      <div class="sel"><select id="ca"></select><div class="vs">vs</div><select id="cb"></select></div>
+      <div class="stage" id="stage"></div>
+      <div class="ovl"><label><input type="checkbox" id="overlay"> Stack them on top of each other</label></div>
+      <table class="ctab" id="ctab"></table>
+    </div>
+  </section>
+  <section id="software">
+    <h2>The software, year by year</h2>
+    <p class="sub">The hardware is half the story. Here is what each major software release brought.</p>
+    <div class="os" id="os"></div>
+  </section>
+  <section id="play">
+    <h2>Play the eras</h2>
+    <p class="sub">Four working phones, one for each design era. Unlock them, open apps, play music, send messages.</p>
+    <div class="plays" id="plays"></div>
+  </section>
+  <footer>Fan-made history project, not affiliated with Apple. Prices are US launch prices for the base model; dimensions are approximate. Data covers releases through September 2025.<br>Also here: the <a href="player.html?device=Classic">click-wheel music player</a> this site started as.</footer>
+</main>
+<div class="ov" id="ov"></div>
+<aside class="drawer" id="drawer"></aside>
 <script>
-const $=s=>document.querySelector(s);
-const body=$('#body'), audio=new Audio();
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const fmt=s=>{s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
-const hue=s=>{let h=0;for(const c of String(s))h=(h*31+c.charCodeAt(0))%360;return h};
-const artStyle=(t,alb)=>t&&t.art?`background-image:url('${t.art}')`:`background:linear-gradient(135deg,hsl(${hue(alb)},65%,55%),hsl(${(hue(alb)+50)%360},70%,30%))`;
-const artHTML=(t,alb)=>`style="${artStyle(t,alb)}"`+'>'+(t&&t.art?'':'♪');
-
-// settings
-const S={shuffle:false,repeat:'Off',clicker:true,case:'White',device:'Classic'};
-try{Object.assign(S,JSON.parse(localStorage.getItem('cwp-settings')||'{}'))}catch(e){}
-const save=()=>{try{localStorage.setItem('cwp-settings',JSON.stringify(S))}catch(e){}};
-const applyCase=()=>$('#device').classList.toggle('black',S.case==='Black');applyCase();
-
-// click sound
-let actx;
-function tick(){if(!S.clicker)return;try{actx=actx||new AudioContext();const b=actx.createBuffer(1,120,actx.sampleRate),d=b.getChannelData(0);for(let i=0;i<120;i++)d[i]=(Math.random()*2-1)*(1-i/120)*.35;const s=actx.createBufferSource();s.buffer=b;s.connect(actx.destination);s.start()}catch(e){}}
-
-let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('on'),1800)}
-
-// library
-const tracks=[];
-function addFiles(files){
-  const list=[...files].filter(f=>f.type.startsWith('audio')||/\.(mp3|m4a|wav|ogg|flac|aac|opus)$/i.test(f.name));
-  if(!list.length)return toast('No audio files found');
-  let pending=list.length;
-  list.forEach(f=>{
-    const t={url:URL.createObjectURL(f),title:f.name.replace(/\.[^.]+$/,''),artist:'Unknown Artist',album:'Unknown Album',art:null};
-    tracks.push(t);
-    const done=()=>{if(--pending===0){toast(list.length+' song'+(list.length>1?'s':'')+' added');render()}};
-    if(window.jsmediatags){try{jsmediatags.read(f,{onSuccess(tag){const g=tag.tags||{};if(g.title)t.title=g.title;if(g.artist)t.artist=g.artist;if(g.album)t.album=g.album;
-      if(g.picture){t.art=URL.createObjectURL(new Blob([new Uint8Array(g.picture.data)],{type:g.picture.format}))}done()},onError:done})}catch(e){done()}}else done();
-  });
-}
-const byTitle=l=>l.slice().sort((a,b)=>a.title.localeCompare(b.title));
-const uniq=k=>[...new Set(tracks.map(t=>t[k]))].sort((a,b)=>a.localeCompare(b));
-const albums=()=>uniq('album').map(a=>{const ts=tracks.filter(t=>t.album===a);return{name:a,artist:ts[0].artist,cover:ts.find(t=>t.art)||ts[0],songs:ts}});
-
-// playback
-let queue=[],qi=-1,scrub=false,volUntil=0;
-const cur=()=>queue[qi];
-function shuffleArr(a){for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
-function playQueue(list,i){queue=list.slice();if(S.shuffle){const c=queue.splice(i,1)[0];shuffleArr(queue);queue.unshift(c);i=0}qi=i;load()}
-function load(){const t=cur();if(!t)return;audio.src=t.url;audio.play().catch(()=>{});render()}
-function next(auto){if(!queue.length)return;if(auto&&S.repeat==='One'){audio.currentTime=0;audio.play();return}
-  if(qi<queue.length-1)qi++;else if(!auto||S.repeat==='All')qi=0;else{audio.pause();render();return}load()}
-function prev(){if(!queue.length)return;if(audio.currentTime>3){audio.currentTime=0;return}qi=Math.max(0,qi-1);load()}
-function togglePlay(){if(!cur()){if(tracks.length){S.shuffle=true;playQueue(tracks,Math.random()*tracks.length|0);push(nowPlaying())}else toast('Drop some music first');return}audio.paused?audio.play():audio.pause();render()}
-audio.addEventListener('ended',()=>next(true));
-audio.addEventListener('play',render);audio.addEventListener('pause',render);
-
-// views
-const stack=[];
-const view=()=>stack[stack.length-1];
-function push(v){stack.push(v);render()}
-function listView(title,itemsFn){return{type:'list',title,itemsFn,sel:0,top:0}}
-const emptyItem=[{label:'Drop music onto the page'}];
-const songList=(title,listFn)=>listView(title,()=>{const l=listFn();return l.length?l.map((t,i)=>({label:t.title,go:()=>{playQueue(l,i);return nowPlaying()}})):emptyItem});
-
-const mainMenu=listView('Music Player',()=>[
-  {label:'Music',arrow:1,go:()=>musicMenu()},
-  {label:'Extras',arrow:1,go:()=>extrasMenu()},
-  {label:'Settings',arrow:1,go:()=>settingsMenu()},
-  {label:'Shuffle Songs',go:()=>{if(!tracks.length){toast('Drop some music first');return}S.shuffle=true;save();playQueue(tracks,Math.random()*tracks.length|0);return nowPlaying()}},
-  ...(cur()?[{label:'Now Playing',arrow:1,go:()=>nowPlaying()}]:[])
-]);
-const musicMenu=()=>listView('Music',()=>[
-  {label:'Cover Flow',arrow:1,go:()=>coverFlow()},
-  {label:'Artists',arrow:1,go:()=>listView('Artists',()=>{const a=uniq('artist');return a.length?a.map(n=>({label:n,arrow:1,go:()=>songList(n,()=>byTitle(tracks.filter(t=>t.artist===n)))})):emptyItem})},
-  {label:'Albums',arrow:1,go:()=>listView('Albums',()=>{const a=albums();return a.length?a.map(al=>({label:al.name,arrow:1,go:()=>songList(al.name,()=>al.songs)})):emptyItem})},
-  {label:'Songs',arrow:1,go:()=>songList('Songs',()=>byTitle(tracks))},
-  {label:'Add Music…',go:()=>{$('#file').click()}}
-]);
-const extrasMenu=()=>listView('Extras',()=>[
-  {label:'Clock',arrow:1,go:()=>clockView()},
-  {label:'Stopwatch',arrow:1,go:()=>stopwatch()},
-  {label:'Visualizer',arrow:1,go:()=>vizView()},
-  {label:'Games',arrow:1,go:()=>listView('Games',()=>[{label:'Brick',arrow:1,go:()=>brick()}])}
-]);
-const settingsMenu=()=>listView('Settings',()=>[
-  {label:'Shuffle',val:S.shuffle?'Songs':'Off',go:()=>{S.shuffle=!S.shuffle;save();render()}},
-  {label:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();render()}},
-  {label:'EQ',val:S.eq||'Flat',go:()=>{cycleEQ();render()}},
-  {label:'Brightness',val:(S.bright||100)+'%',go:()=>{cycleBright();render()}},
-  {label:'Clicker',val:S.clicker?'On':'Off',go:()=>{S.clicker=!S.clicker;save();render()}},
-  {label:'Case Color',val:S.case,go:()=>{S.case=S.case==='White'?'Black':'White';save();applyCase();render()}},
-  {label:'Device',val:'Classic',go:()=>{S.device='Touch';S.model='Touch';save();applyDevice()}},
-  {label:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');render()}}
-]);
-
-function nowPlaying(){return{type:'np',title:'Now Playing',
-  render(){const t=cur();if(!t)return`<div class="empty"><b>Nothing playing</b>Pick a song from Music.</div>`;
-    const d=audio.duration||0,p=d?audio.currentTime/d*100:0,showVol=Date.now()<volUntil;
-    return`<div class="np"><div class="art" ${artHTML(t,t.album)}</div><div class="meta"><div class="c">${qi+1} of ${queue.length}${S.shuffle?' · 🔀':''}${S.repeat!=='Off'?' · 🔁'+(S.repeat==='One'?'1':''):''}</div>
-    <div class="ti">${esc(t.title)}</div><div class="ar">${esc(t.artist)}</div><div class="al">${esc(t.album)}</div></div></div>`+
-    (showVol?`<div class="vol">🔈<div class="bar"><i style="width:${audio.volume*100}%"></i></div>🔊</div>`:
-    `<div class="prog"><div class="bar ${scrub?'scrub':''}"><i style="width:${p}%"></i></div><div class="times"><span>${fmt(audio.currentTime)}</span><span>-${fmt(d-audio.currentTime)}</span></div></div>`)},
-  onScroll(d){if(!cur())return;if(scrub){audio.currentTime=Math.min(Math.max(0,audio.currentTime+d*3),(audio.duration||1)-.1)}else{audio.volume=Math.min(1,Math.max(0,audio.volume+d*.05));volUntil=Date.now()+1500}render()},
-  onSelect(){scrub=!scrub;volUntil=0;render()},
-  live:true}}
-
-function coverFlow(){return{type:'cf',title:'Cover Flow',sel:0,
-  render(){const a=albums();if(!a.length)return`<div class="cf"><div class="empty" style="color:#aaa"><b style="color:#fff">No albums yet</b>Drop music onto the page.</div></div>`;
-    this.sel=Math.min(this.sel,a.length-1);
-    return`<div class="cf">`+a.map((al,i)=>{const o=i-this.sel;if(Math.abs(o)>4)return'';const s=Math.sign(o);
-      const tf=o===0?'translateZ(40px)':`translateX(${s*55+o*32}px) rotateY(${-s*65}deg)`;
-      return`<div class="it" style="transform:${tf};z-index:${10-Math.abs(o)};${artStyle(al.cover.art?al.cover:null,al.name)}">${al.cover.art?'':'♪'}</div>`}).join('')+
-      `<div class="lab">${esc(a[this.sel].name)}<small>${esc(a[this.sel].artist)}</small></div></div>`},
-  onScroll(d){const n=albums().length;this.sel=Math.min(Math.max(0,this.sel+d),Math.max(0,n-1));render()},
-  onSelect(){const al=albums()[this.sel];if(al)push(songList(al.name,()=>al.songs))}}}
-
-function clockView(){return{type:'clock',title:'Clock',live:true,render(){const n=new Date();
-  return`<div class="big"><div class="tm">${n.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})}</div><div class="sub">${n.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})}</div></div>`}}}
-
-function stopwatch(){return{type:'sw',title:'Stopwatch',live:true,run:false,start:0,acc:0,laps:[],
-  el(){return this.acc+(this.run?Date.now()-this.start:0)},
-  f(ms){const cs=Math.floor(ms/10)%100,s=Math.floor(ms/1000)%60,m=Math.floor(ms/60000);return`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}.${String(cs).padStart(2,'0')}`},
-  render(){return`<div class="big"><div class="tm" style="font-size:44px">${this.f(this.el())}</div><div class="sub">${this.laps.slice(-2).map((l,i)=>'Lap '+(this.laps.length-Math.min(2,this.laps.length)+i+1)+': '+this.f(l)).join(' · ')||'Center: start / stop'}</div><div class="sub" style="font-size:11px">◀◀ reset · ▶▶ lap</div></div>`},
-  onSelect(){if(this.run){this.acc=this.el();this.run=false}else{this.start=Date.now();this.run=true}render()},
-  onPrev(){this.run=false;this.acc=0;this.laps=[];render()},
-  onNext(){if(this.run)this.laps.push(this.el())}}}
-
-function brick(){const W=304,H=206;const g={type:'game',title:'Brick',canvas:true,px:W/2-25,ball:null,lives:3,score:0,bricks:[],running:false,
-  reset(){this.bricks=[];for(let r=0;r<5;r++)for(let c=0;c<8;c++)this.bricks.push({x:4+c*37.5,y:14+r*12,w:34,h:9,r});this.lives=3;this.score=0;this.serve()},
-  serve(){this.ball={x:this.px+25,y:H-20,vx:0,vy:0};this.running=false},
-  render(){return`<canvas id="cv" width="${W}" height="${H}"></canvas>`},
-  mount(){this.ctx=$('#cv').getContext('2d');const loop=()=>{if(!(this.active?this.active():view()===this))return;this.step();this.draw();requestAnimationFrame(loop)};loop()},
-  onScroll(d){this.px=Math.min(W-50,Math.max(0,this.px+d*18));if(!this.running)this.ball.x=this.px+25},
-  onSelect(){if(this.lives<=0||!this.bricks.length){this.reset();return}if(!this.running){this.running=true;this.ball.vx=(Math.random()<.5?-1:1)*2.2;this.ball.vy=-2.8}},
-  step(){const b=this.ball;if(!this.running)return;b.x+=b.vx;b.y+=b.vy;
-    if(b.x<3||b.x>W-3)b.vx*=-1;if(b.y<3)b.vy*=-1;
-    if(b.y>H-14&&b.y<H-8&&b.x>this.px-3&&b.x<this.px+53&&b.vy>0){b.vy=-Math.abs(b.vy)*1.02;b.vx=((b.x-this.px-25)/25)*3.2}
-    for(const k of this.bricks)if(!k.dead&&b.x>k.x&&b.x<k.x+k.w&&b.y>k.y&&b.y<k.y+k.h){k.dead=1;b.vy*=-1;this.score+=10*(5-k.r);break}
-    this.bricks=this.bricks.filter(k=>!k.dead);
-    if(!this.bricks.length)this.running=false;
-    if(b.y>H){this.lives--;this.serve()}},
-  draw(){const c=this.ctx,cols=['#e74c3c','#f39c12','#f1c40f','#2ecc71','#3498db'];c.fillStyle='#0b1020';c.fillRect(0,0,W,H);
-    this.bricks.forEach(k=>{c.fillStyle=cols[k.r];c.fillRect(k.x,k.y,k.w,k.h)});
-    c.fillStyle='#ddd';c.fillRect(this.px,H-10,50,5);c.beginPath();c.arc(this.ball.x,this.ball.y,3,0,7);c.fill();
-    c.font='bold 10px sans-serif';c.fillText('Score '+this.score,4,10);c.fillText('♥'.repeat(Math.max(0,this.lives)),W-40,10);
-    const msg=this.lives<=0?'Game over · press center':!this.bricks.length?'You win! · press center':!this.running?'Press center to launch':'';
-    if(msg){c.textAlign='center';c.font='bold 13px sans-serif';c.fillText(msg,W/2,H/2+20);c.textAlign='left'}}};
-  g.reset();return g}
-
-// render
-function render(){
-  const v=view();
-  $('#htitle').textContent=v.title;
-  $('#hplay').textContent=cur()?(audio.paused?'❙❙':'▶'):'';
-  if(v.type==='list'){
-    const items=v.itemsFn();v.items=items;if(v.sel>=items.length)v.sel=Math.max(0,items.length-1);
-    const N=7;if(v.sel<v.top)v.top=v.sel;if(v.sel>=v.top+N)v.top=v.sel-N+1;v.top=Math.max(0,Math.min(v.top,items.length-N));
-    let h=items.slice(v.top,v.top+N).map((it,i)=>`<div class="row ${v.top+i===v.sel?'sel':''}" data-i="${v.top+i}"><span>${esc(it.label)}</span>${it.val?`<em>${esc(it.val)}</em>`:it.arrow?'<b>›</b>':''}</div>`).join('');
-    if(items.length>N){const hgt=N/items.length*100;h+=`<div class="sb"><i style="top:${v.top/items.length*100}%;height:${hgt}%"></i></div>`;body.querySelectorAll}
-    body.innerHTML=h;
-  }else{
-    if(v.canvas&&body.querySelector('#cv')&&body.dataset.v===String(stack.length))return;
-    body.innerHTML=v.render();body.dataset.v=stack.length;if(v.mount)v.mount();
-  }
-}
-setInterval(()=>{const v=view();if(v.live)render()},250);
-
-// input
-function scroll(d){const v=view();tick();if(v.onScroll)return v.onScroll(d);if(v.type==='list'){const n=v.items?v.items.length:0;v.sel=Math.min(Math.max(0,v.sel+d),Math.max(0,n-1));render()}}
-function press(b){const v=view();
-  if(b==='menu'){if(stack.length>1){stack.pop();scrub=false;body.dataset.v='';render()}return}
-  if(b==='play')return togglePlay();
-  if(b==='next')return v.onNext?v.onNext():next(false);
-  if(b==='prev')return v.onPrev?v.onPrev():prev();
-  if(b==='select'){if(v.onSelect)return v.onSelect();if(v.type==='list'){const it=v.items&&v.items[v.sel];if(it&&it.go){const r=it.go();if(r)push(r);else render()}}}
-}
-const wheel=$('#wheel');let drag=null;const STEP=16;
-const ang=e=>{const r=wheel.getBoundingClientRect();return Math.atan2(e.clientY-r.top-r.height/2,e.clientX-r.left-r.width/2)*180/Math.PI};
-wheel.addEventListener('pointerdown',e=>{if(e.target.closest('#center'))return;wheel.setPointerCapture(e.pointerId);drag={a:ang(e),acc:0,moved:0}});
-wheel.addEventListener('pointermove',e=>{if(!drag)return;const a=ang(e);let d=a-drag.a;if(d>180)d-=360;if(d<-180)d+=360;drag.a=a;drag.acc+=d;drag.moved+=Math.abs(d);
-  while(drag.acc>=STEP){drag.acc-=STEP;scroll(1)}while(drag.acc<=-STEP){drag.acc+=STEP;scroll(-1)}});
-wheel.addEventListener('pointerup',e=>{if(drag&&drag.moved<8){const r=wheel.getBoundingClientRect(),x=e.clientX-r.left-r.width/2,y=e.clientY-r.top-r.height/2;
-  tick();if(Math.abs(y)>Math.abs(x))press(y<0?'menu':'play');else press(x>0?'next':'prev')}drag=null});
-wheel.addEventListener('pointercancel',()=>drag=null);
-$('#center').addEventListener('click',()=>{tick();press('select')});
-$('.screen').addEventListener('wheel',e=>{e.preventDefault();scroll(e.deltaY>0?1:-1)},{passive:false});
-body.addEventListener('click',e=>{const r=e.target.closest('.row');const v=view();if(r&&v.type==='list'){v.sel=+r.dataset.i;press('select')}});
-addEventListener('keydown',e=>{const k={ArrowDown:()=>scroll(1),ArrowUp:()=>scroll(-1),Enter:()=>press('select'),Escape:()=>press('menu'),Backspace:()=>press('menu'),' ':()=>press('play'),ArrowLeft:()=>press('prev'),ArrowRight:()=>press('next')}[e.key];if(k){e.preventDefault();k()}});
-
-// drag & drop
-let dc=0;const drop=$('#drop');
-addEventListener('dragenter',e=>{e.preventDefault();dc++;drop.classList.add('on')});
-addEventListener('dragleave',()=>{if(--dc<=0){dc=0;drop.classList.remove('on')}});
-addEventListener('dragover',e=>e.preventDefault());
-addEventListener('drop',e=>{e.preventDefault();dc=0;drop.classList.remove('on');addFiles(e.dataTransfer.files)});
-$('#file').addEventListener('change',e=>{addFiles(e.target.files);e.target.value=''});
-
-stack.push(mainMenu);render();
-</script>
-<style>
-.touch{display:none;width:340px;height:640px;border-radius:46px;padding:62px 18px 0;position:relative;background:linear-gradient(160deg,#2c2c2f,#0b0b0c);box-shadow:0 30px 60px rgba(0,0,0,.45),inset 0 0 0 2px #9a9a9f,inset 0 0 0 5px #111}
-.touch:before{content:"";position:absolute;top:30px;left:50%;width:48px;height:6px;margin-left:-24px;border-radius:3px;background:#222;box-shadow:inset 0 1px 2px #000}
-.tscreen{width:304px;height:456px;background:#000;position:relative;overflow:hidden}
-.thome{position:absolute;bottom:30px;left:50%;width:56px;height:56px;margin-left:-28px;border-radius:50%;background:linear-gradient(#1a1a1c,#323236);box-shadow:inset 0 1px 3px #000,0 0 0 1px #444;cursor:pointer}
-.thome:after{content:"";position:absolute;inset:19px;border:2px solid #888;border-radius:4px}
-.tsb{height:20px;background:#000;color:#fff;font-size:12px;font-weight:600;display:flex;justify-content:space-between;align-items:center;padding:0 6px}
-.tsb .bat{border-color:#fff}.tsb .bat:after{background:#fff}
-.tpage{position:absolute;top:20px;left:0;right:0;bottom:0;display:flex;flex-direction:column;background:#fff}
-.tnav{height:42px;flex:none;background:linear-gradient(#b8c3d1,#6d84a2);border-bottom:1px solid #2d3642;display:flex;align-items:center;justify-content:center;position:relative;color:#fff;text-shadow:0 -1px 0 rgba(0,0,0,.4);font-size:17px}
-.tnav b{max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tbk{position:absolute;left:6px;top:7px;height:28px;padding:0 10px 0 8px;border-radius:5px;border:1px solid #3d4f68;background:linear-gradient(#8fa3bd,#4a6688);color:#fff;font-size:12px;font-weight:700;cursor:pointer;text-shadow:0 -1px 0 rgba(0,0,0,.4)}
-.tcontent{flex:1;overflow-y:auto;position:relative;min-height:0}
-.thomebg{background:radial-gradient(circle at 30% 20%,#3b6fb6,#14284d 60%,#060b16)}
-.tgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 0;padding:20px 6px}
-.tapp{display:flex;flex-direction:column;align-items:center;gap:5px;color:#fff;font-size:11px;background:none;border:0;cursor:pointer;text-shadow:0 1px 2px #000;font-family:inherit}
-.tapp i{width:57px;height:57px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:28px;font-style:normal;box-shadow:0 2px 5px rgba(0,0,0,.6);position:relative;overflow:hidden;color:#fff}
-.tapp i:after{content:"";position:absolute;left:-10%;right:-10%;top:-50%;height:95%;border-radius:0 0 50% 50%;background:linear-gradient(rgba(255,255,255,.45),rgba(255,255,255,.1))}
-.tapp:active i{filter:brightness(.7)}
-.trow{display:flex;align-items:center;gap:10px;padding:0 12px;height:52px;border-bottom:1px solid #ddd;cursor:pointer}
-.trow:active{background:linear-gradient(#058cf5,#015fe6);color:#fff}
-.tth{width:40px;height:40px;flex:none;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;color:#fff}
-.trow .m{flex:1;min-width:0}.trow .m b,.trow .m small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.trow .m b{font-size:15px}.trow .m small{font-size:12px;color:#777}.trow:active small{color:#dde}
-.trow em{font-style:normal;color:#385487;font-size:14px}.trow .ch{color:#999;font-size:20px}
-.tmusic{display:flex;flex-direction:column;overflow:hidden}.tscroll{flex:1;overflow-y:auto}
-.ttabs{display:flex;height:48px;flex:none;background:linear-gradient(#3a3a3a,#111)}
-.ttab{flex:1;color:#999;font-size:10px;border:0;background:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:inherit}
-.ttab span{font-size:18px}.ttab.on{color:#fff;background:rgba(255,255,255,.13);border-radius:4px;margin:3px}
-.tnp{background:linear-gradient(#2a2a2a,#000);color:#fff;display:flex;flex-direction:column;align-items:center;padding:12px 18px;gap:5px}
-.tart{width:180px;height:180px;flex:none;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;font-size:60px;color:rgba(255,255,255,.85);box-shadow:0 4px 14px rgba(0,0,0,.7)}
-.tnp input[type=range]{width:100%;accent-color:#fff;margin:4px 0 0}
-.ttimes{width:100%;display:flex;justify-content:space-between;font-size:11px;color:#bbb}
-.tti{font-size:15px;font-weight:700;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tar{font-size:12px;color:#aaa;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tctl{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:2px}
-.tctl button{background:none;border:0;color:#fff;font-size:22px;cursor:pointer;opacity:.9}
-.tctl button.big{font-size:34px}.tctl button.dim{opacity:.35}
-.tvol{display:flex;align-items:center;gap:6px;width:100%;font-size:13px}
-.tempty{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#888;font-size:13px;gap:6px;padding:24px}
-.tempty b{font-size:16px;color:#444}.tnp .tempty b{color:#eee}
-.tbtns{display:flex;gap:12px;justify-content:center;padding:14px}
-.tbtns button{min-width:80px;height:40px;border-radius:8px;border:1px solid #999;background:linear-gradient(#fff,#ddd);font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
-.tbtns button.go{background:linear-gradient(#6fd36f,#2e9a2e);color:#fff;border-color:#2a7a2a}
-.tbtns button.stop{background:linear-gradient(#f07070,#c0392b);color:#fff;border-color:#922}
-.tgame{background:#0b1020}.tgame canvas{width:100%;touch-action:none}
-.tgame p{color:#8a93a8;font-size:12px;text-align:center;margin:10px}
-</style>
-<div class="touch" id="touch">
-  <div class="tscreen"><div class="tsb"><span>Music Player</span><span id="tclock"></span><span class="bat"><i></i></span></div><div class="tpage" id="tpage"></div></div>
-  <div class="thome" id="thomebtn" title="Home"></div>
-</div>
-<script>
-(function(){
-const tpage=$('#tpage');const T={stack:[],tab:'Songs'};const top=()=>T.stack[T.stack.length-1];
-function tpush(p){if(!p)return;const k=T.stack.length===1?'open':'push';if(TT.anim)TT.anim(k,()=>T.stack.push(p));else{T.stack.push(p);trender()}}
-function tback(){if(T.stack.length>1){if(TT.anim)TT.anim('back',()=>T.stack.pop());else{T.stack.pop();trender()}}}
-function trender(){if(S.device!=='Touch')return;const p=top();
-  tpage.innerHTML=(p.nav?`<div class="tnav">${T.stack.length>1?'<button class="tbk">‹ Back</button>':''}<b>${esc(p.title)}</b></div>`:'')+`<div class="tcontent ${p.cls||''}">${p.html()}</div>`;
-  const bk=tpage.querySelector('.tbk');if(bk)bk.onclick=tback;if(p.bind)p.bind(tpage.querySelector('.tcontent'))}
-const thumb=(t,alb)=>`<div class="tth" style="${artStyle(t,alb)}">${t&&t.art?'':'♪'}</div>`;
-const rowsHTML=items=>items.length?items.map((it,i)=>`<div class="trow" data-i="${i}">${it.thumb||''}<div class="m"><b>${esc(it.main)}</b>${it.sub?`<small>${esc(it.sub)}</small>`:''}</div>${it.val?`<em>${esc(it.val)}</em>`:it.ch?'<span class="ch">›</span>':''}</div>`).join(''):`<div class="tempty"><b>No music yet</b>Drop audio files onto the page, or tap Add Music on the home screen.</div>`;
-const bindRows=(el,items)=>el.querySelectorAll('.trow').forEach(r=>r.onclick=()=>{const it=items[+r.dataset.i];if(it&&it.go)tpush(it.go())});
-const songItems=list=>list.map((t,i)=>({main:t.title,sub:t.artist+' — '+t.album,thumb:thumb(t,t.album),go:()=>{playQueue(list,i);return npPage()}}));
-function listPage(title,itemsFn){let items;return{nav:true,title,html(){items=itemsFn();return rowsHTML(items)},bind(el){bindRows(el,items)}}}
-const tabs={Songs:'♫',Artists:'👤',Albums:'💿'};
-function musicPage(){let items;return{nav:true,title:'Music',cls:'tmusic',
-  html(){items=T.tab==='Songs'?songItems(byTitle(tracks)):T.tab==='Artists'?uniq('artist').map(a=>({main:a,ch:1,go:()=>listPage(a,()=>songItems(byTitle(tracks.filter(t=>t.artist===a))))})):
-    albums().map(al=>({main:al.name,sub:al.artist,thumb:thumb(al.cover.art?al.cover:null,al.name),ch:1,go:()=>listPage(al.name,()=>songItems(al.songs))}));
-    return`<div class="tscroll">${rowsHTML(items)}</div><div class="ttabs">`+Object.keys(tabs).map(k=>`<button class="ttab ${k===T.tab?'on':''}" data-t="${k}"><span>${tabs[k]}</span>${k}</button>`).join('')+`</div>`},
-  bind(el){bindRows(el,items);el.querySelectorAll('.ttab').forEach(b=>b.onclick=()=>{T.tab=b.dataset.t;trender()})}}}
-let seeking=false;
-function npPage(){return{nav:true,title:'Now Playing',cls:'tnp',
-  html(){const t=cur();if(!t)return`<div class="tempty"><b>Nothing playing</b>Pick a song in Music.</div>`;
-    return`<div class="tart" style="${artStyle(t,t.album)}">${t.art?'':'♪'}</div>
-    <input type="range" class="tscrub" min="0" max="1000" value="0"><div class="ttimes"><span class="tc">0:00</span><span>${qi+1} of ${queue.length}</span><span class="tr">-0:00</span></div>
-    <div class="tti">${esc(t.title)}</div><div class="tar">${esc(t.artist)} — ${esc(t.album)}</div>
-    <div class="tctl"><button data-a="sh" class="${S.shuffle?'':'dim'}">🔀</button><button data-a="prev">⏮</button><button data-a="play" class="big">${audio.paused?'▶':'⏸'}</button><button data-a="next">⏭</button><button data-a="rp" class="${S.repeat==='Off'?'dim':''}">${S.repeat==='One'?'🔂':'🔁'}</button></div>
-    <div class="tvol">🔈<input type="range" class="tvolr" min="0" max="100" value="${Math.round(audio.volume*100)}">🔊</div>`},
-  bind(el){const sc=el.querySelector('.tscrub');if(!sc)return;
-    sc.oninput=()=>{seeking=true};sc.onchange=()=>{if(audio.duration)audio.currentTime=sc.value/1000*audio.duration;seeking=false};
-    el.querySelector('.tvolr').oninput=e=>{audio.volume=e.target.value/100};
-    el.querySelectorAll('.tctl button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
-      if(a==='play')togglePlay();else if(a==='next')next(false);else if(a==='prev')prev();
-      else if(a==='sh'){S.shuffle=!S.shuffle;save();trender()}else if(a==='rp'){S.repeat={Off:'All',All:'One',One:'Off'}[S.repeat];save();trender()}});
-    this.update(el)},
-  update(el){const sc=el.querySelector('.tscrub');if(!sc)return;const d=audio.duration||0;if(!seeking)sc.value=d?audio.currentTime/d*1000:0;
-    el.querySelector('.tc').textContent=fmt(audio.currentTime);el.querySelector('.tr').textContent='-'+fmt(d-audio.currentTime)}}}
-function cfPage(){const cf=coverFlow();return{nav:true,title:'Cover Flow',html(){return cf.render()},
-  bind(el){let x0=0;el.onpointerdown=e=>{x0=e.clientX};el.onpointerup=e=>{const dx=e.clientX-x0,r=el.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width;
-    if(dx>30)cf.onScroll(-1);else if(dx<-30)cf.onScroll(1);else if(fx<.3)cf.onScroll(-1);else if(fx>.7)cf.onScroll(1);
-    else{const al=albums()[cf.sel];if(al)tpush(listPage(al.name,()=>songItems(al.songs)))}}}}}
-function clockPage(){const c=clockView();return{nav:true,title:'Clock',html(){return c.render()},update(el){el.innerHTML=c.render()}}}
-function swPage(){const sw=stopwatch();return{nav:true,title:'Stopwatch',
-  html(){return`<div class="big" style="height:auto;padding-top:40px"><div class="tm" style="font-size:46px">${sw.f(sw.el())}</div></div>
-    <div class="tbtns"><button data-a="lap">${sw.run?'Lap':'Reset'}</button><button data-a="go" class="${sw.run?'stop':'go'}">${sw.run?'Stop':'Start'}</button></div>`+
-    rowsHTML(sw.laps.map((l,i)=>({main:'Lap '+(i+1),val:sw.f(l)})).reverse()).replace(/<div class="tempty">.*<\/div>/,'')},
-  bind(el){el.querySelectorAll('.tbtns button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='go')sw.onSelect();else if(sw.run)sw.onNext();else sw.onPrev();trender()})},
-  update(el){const tm=el.querySelector('.tm');if(tm)tm.textContent=sw.f(sw.el())}}}
-function brickPage(){const g=brick();const p={nav:true,title:'Brick',cls:'tgame',noRefresh:true,
-  html(){return g.render()+'<p>Drag to move the paddle · tap to launch</p>'},
-  bind(el){g.active=()=>S.device==='Touch'&&top()===p;g.mount();const cv=el.querySelector('canvas');
-    const mv=e=>{const r=cv.getBoundingClientRect();g.px=Math.min(304-50,Math.max(0,(e.clientX-r.left)*304/r.width-25));if(!g.running)g.ball.x=g.px+25};
-    cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);mv(e);g.onSelect()};cv.onpointermove=e=>{if(e.buttons)mv(e)}}};return p}
-function setPage(){return listPage('Settings',()=>[
-  {main:'Shuffle',val:S.shuffle?'On':'Off',go:()=>{S.shuffle=!S.shuffle;save();trender()}},
-  {main:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();trender()}},
-  {main:'Device',val:S.model==='Phone'?'Phone':'Touch Player',go:()=>{if(S.model!=='Phone')S.model='Phone';else{S.model='Touch';S.device='Classic'}save();applyDevice()}},
-  {main:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');trender()}}])}
-const apps=[['Music','♫','#ff7a59,#d6246e',musicPage],['Now Playing','▶','#4facfe,#1d4ed8',npPage],['Cover Flow','💿','#555,#111',cfPage],['Clock','🕒','#3a3a3a,#000',clockPage],
-  ['Stopwatch','⏱','#f7a531,#d35400',swPage],['Brick','🧱','#2bc48a,#11785a',brickPage],['Add Music','＋','#b39ddb,#6a4cc2',()=>{$('#file').click()}],['Settings','⚙️','#c3cad1,#6c7a89',setPage]];
-const home={cls:'thomebg',html(){return'<div class="tgrid">'+apps.map((a,i)=>`<button class="tapp" data-i="${i}"><i style="background:linear-gradient(${a[2]})">${a[1]}</i>${a[0]}</button>`).join('')+'</div>'},
-  bind(el){el.querySelectorAll('.tapp').forEach(b=>b.onclick=()=>tpush(apps[+b.dataset.i][3]()))}};
-T.stack=[home];window.TT={T,tpush,tback,trender,listPage,home,top,musicPage,npPage,cfPage,clockPage,swPage,brickPage,thumb};
-$('#thomebtn').onclick=()=>{T.stack.length=1;trender()};
-const _render=render;render=function(){_render();const p=top();if(S.device==='Touch'&&!p.noRefresh)trender()};
-setInterval(()=>{$('#tclock').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});if(S.device!=='Touch')return;const p=top();if(p.update)p.update(tpage.querySelector('.tcontent'))},250);
-addEventListener('keydown',e=>{if(S.device!=='Touch')return;if(/INPUT|TEXTAREA/.test(e.target.tagName)){e.stopImmediatePropagation();return}if(e.key===' '){e.preventDefault();togglePlay()}else if(e.key==='Escape')tback();e.stopImmediatePropagation()},true);
-window.applyDevice=function(){const t=S.device==='Touch';$('#device').style.display=t?'none':'';$('#touch').style.display=t?'block':'none';
-  $('.help').innerHTML=t?'Tap the screen like a phone. The round button under the screen goes home. Drag music files anywhere on the page.':HELP;
-  stack.length=1;T.stack.length=1;_render();trender()};
-document.body.insertBefore($('#touch'),$('.help'));const HELP=$('.help').innerHTML;applyDevice();
-})();
-</script>
-
-<style>
-.tpower{position:absolute;top:-5px;right:64px;width:46px;height:6px;border-radius:3px 3px 0 0;background:linear-gradient(#bbb,#666);cursor:pointer}
-.thomebg{background:var(--wall);display:flex;flex-direction:column}
-.thomebg .tgrid{flex:1;align-content:start;gap:16px 0;padding-top:16px}
-.tdock{display:grid;grid-template-columns:repeat(4,1fr);padding:9px 6px 7px;background:linear-gradient(rgba(255,255,255,.28),rgba(255,255,255,.08));border-top:1px solid rgba(255,255,255,.35)}
-@keyframes tpop{from{transform:scale(.86);opacity:0}to{transform:none;opacity:1}}
-.tpage.anim .tcontent{animation:tpop .22s ease-out}
-.tsb{cursor:pointer}
-.tlock{position:absolute;top:20px;left:0;right:0;bottom:0;z-index:20;background:var(--wall);display:flex;flex-direction:column;align-items:center;color:#fff;transition:transform .35s ease-in,opacity .35s}
-.tlock.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
-.lbar{width:100%;background:rgba(0,0,0,.45);text-align:center;padding:8px 0 8px;border-bottom:1px solid rgba(255,255,255,.15)}
-.lt{font-size:52px;font-weight:200;line-height:1.1}.ld{font-size:13px;opacity:.9}
-.lnp{margin:14px 12px;background:rgba(0,0,0,.5);border-radius:10px;padding:8px;display:flex;align-items:center;gap:8px;width:calc(100% - 24px)}
-.lnp .m{flex:1;min-width:0}.lnp b,.lnp small{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lnp b{font-size:13px}.lnp small{font-size:11px;color:#bbb}
-.lnp button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer;padding:2px}
-.slide{margin-top:auto;width:100%;background:rgba(0,0,0,.55);padding:14px 14px 18px}
-.trk{position:relative;height:46px;border-radius:10px;background:rgba(0,0,0,.6);box-shadow:inset 0 1px 3px #000;display:flex;align-items:center;justify-content:center;font-size:17px}
-.trk span{background:linear-gradient(90deg,#666 0%,#666 40%,#fff 50%,#666 60%,#666 100%);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shim 2.4s linear infinite;padding-left:40px}
-@keyframes shim{from{background-position:100% 0}to{background-position:-50% 0}}
-.knob{position:absolute;left:3px;top:3px;width:60px;height:40px;border-radius:8px;background:linear-gradient(#fff,#b9b9b9);color:#777;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:grab;touch-action:none;z-index:1}
-.toff{position:absolute;inset:0;background:#000;z-index:40;display:none}.toff.on{display:block}
-.tban{position:absolute;left:6px;right:6px;top:24px;z-index:30;background:rgba(22,22,24,.94);color:#fff;border-radius:10px;padding:8px;display:flex;gap:8px;align-items:center;transform:translateY(calc(-100% - 40px));transition:transform .3s;box-shadow:0 4px 12px rgba(0,0,0,.5)}
-.tban.on{transform:none}.tban .tth{width:34px;height:34px}.tban div{min-width:0}
-.tban small{display:block;font-size:9px;color:#aaa;letter-spacing:1px}.tban b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tban span{font-size:11px;color:#ccc}
-.tcc{position:absolute;left:0;right:0;top:20px;z-index:35;background:rgba(18,18,22,.95);color:#fff;padding:12px 14px 8px;transform:translateY(calc(-100% - 40px));transition:transform .3s;border-radius:0 0 16px 16px;box-shadow:0 8px 20px rgba(0,0,0,.6)}
-.tcc.on{transform:none}
-.tcc .r2{display:flex;align-items:center;gap:8px;font-size:14px;margin:6px 0}.tcc input{flex:1;accent-color:#fff}
-.tcc .tg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
-.tcc .tg button{height:56px;border-radius:12px;border:0;background:rgba(255,255,255,.14);color:#fff;font-size:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;font-family:inherit}
-.tcc .tg button span{font-size:18px}.tcc .tg button.on{background:#2f7cf6}
-.tcc .grab{width:36px;height:4px;border-radius:2px;background:#666;margin:10px auto 0}
-.tcalc{background:#000;display:flex;flex-direction:column;justify-content:flex-end;padding:8px}
-.cdisp{color:#fff;font-size:48px;font-weight:200;text-align:right;padding:6px 8px;overflow:hidden;white-space:nowrap}
-.ckeys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.ckeys button{height:58px;border-radius:29px;border:0;background:#333;color:#fff;font-size:22px;cursor:pointer;font-family:inherit}
-.ckeys .op{background:#ff9f0a}.ckeys .fn{background:#a5a5a5;color:#000}.ckeys .zero{grid-column:span 2;text-align:left;padding-left:24px}
-.ckeys button:active{filter:brightness(1.35)}
-.tnote{background:#fdf6c9;display:flex;flex-direction:column}
-.tnote textarea{flex:1;border:0;background:repeating-linear-gradient(#fdf6c9 0 23px,#e8dc9a 23px 24px);font:17px/24px "Marker Felt","Noteworthy","Comic Sans MS",cursive;padding:4px 12px;resize:none;outline:none;-webkit-user-select:text;user-select:text;color:#333}
-.tdel{margin:8px;height:36px;border-radius:8px;border:1px solid #922;background:linear-gradient(#f07070,#c0392b);color:#fff;font-weight:700;cursor:pointer}
-.tphotos{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;padding:2px}.tphotos img{width:100%;aspect-ratio:1;object-fit:cover;cursor:pointer;display:block}
-.tphoto{background:#000;display:flex;align-items:center;justify-content:center}.tphoto img{max-width:100%;max-height:100%;-webkit-user-drag:none;pointer-events:none}
-.tcam{background:#000;display:flex;flex-direction:column}.tcam video{flex:1;min-height:0;width:100%;object-fit:cover}
-.tcambar{height:80px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:#111}
-.shutter{width:60px;height:60px;border-radius:50%;border:4px solid #fff;background:#ddd;cursor:pointer}.shutter:active{background:#999}
-.thumbp{width:44px;height:44px;border-radius:6px;border:2px solid #555;background:#222 center/cover;cursor:pointer}
-.flip{width:44px;height:44px;border-radius:50%;border:0;background:#333;color:#fff;font-size:20px;cursor:pointer}
-.tflash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}.tflash.go{animation:tfl .35s}@keyframes tfl{from{opacity:.9}to{opacity:0}}
-.wx{min-height:100%;color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px 14px 10px;text-shadow:0 1px 2px rgba(0,0,0,.3)}
-.wc{font-size:22px}.wt{font-size:66px;font-weight:200;line-height:1}.wd{font-size:14px;opacity:.9}
-.wdays{width:100%;margin-top:14px;background:rgba(0,0,0,.18);border-radius:10px;padding:2px 10px}
-.wdays div{display:flex;justify-content:space-between;padding:6px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.12)}.wdays div:last-child{border:0}
-.wcities{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:auto;padding-top:12px}
-.wcities button{border:0;border-radius:12px;padding:5px 10px;background:rgba(255,255,255,.22);color:#fff;font-size:11px;cursor:pointer}.wcities button.on{background:#fff;color:#333;text-shadow:none}
-</style>
-<script>
-(function(){
-const {T,tpush,tback,trender,listPage,home,top,musicPage,npPage,cfPage,clockPage,swPage,brickPage,thumb}=TT;
-const scr=$('.tscreen');
-// ---------- settings defaults
-const EQ={Flat:[0,0,0,0,0],'Bass Booster':[7,4,0,0,0],'Bass Reducer':[-6,-3,0,0,0],Rock:[4,2,-1,2,4],Pop:[-1,2,4,2,-1],'Hip Hop':[5,3,0,1,3],Electronic:[4,1,-1,2,5],Vocal:[-2,0,4,3,0],'Treble Booster':[0,0,0,3,7],Loudness:[5,1,0,1,4]};
-const WALLS=['radial-gradient(circle at 30% 20%,#3b6fb6,#14284d 60%,#060b16)','linear-gradient(160deg,#ff9a8b,#ff6a88 45%,#5b247a)','linear-gradient(160deg,#0f2027,#203a43,#2c5364)','radial-gradient(circle at 70% 30%,#f6d365,#fda085 40%,#2b1055)','linear-gradient(160deg,#11998e,#0b5d4f 60%,#04261f)','linear-gradient(160deg,#434343,#000)'];
-if(!EQ[S.eq])S.eq='Flat';if(S.wall==null)S.wall=0;if(S.bright==null)S.bright=100;if(S.city==null)S.city=0;
-const applyWall=()=>$('#touch').style.setProperty('--wall',WALLS[S.wall%WALLS.length]);
-const applyBright=()=>{const f=S.bright>=100?'':`brightness(${.3+.7*S.bright/100})`;$('.screen').style.filter=f;scr.style.filter=f};
-applyWall();applyBright();
-window.cycleEQ=()=>{const k=Object.keys(EQ);S.eq=k[(k.indexOf(S.eq)+1)%k.length];save();applyEQ()};
-window.cycleBright=()=>{S.bright=S.bright<=25?100:S.bright-25;save();applyBright()};
-// ---------- audio graph: equalizer + analyser
-let an=null,eqs=null;
-function graph(){if(an)return;try{actx=actx||new AudioContext();const src=actx.createMediaElementSource(audio);
-  eqs=[60,250,1000,4000,12000].map((f,i)=>{const b=actx.createBiquadFilter();b.type=i===0?'lowshelf':i===4?'highshelf':'peaking';b.frequency.value=f;b.Q.value=1;return b});
-  an=actx.createAnalyser();an.fftSize=256;an.smoothingTimeConstant=.8;let n=src;for(const e of eqs){n.connect(e);n=e}n.connect(an);an.connect(actx.destination);applyEQ()}catch(e){}}
-function applyEQ(){if(eqs)EQ[S.eq].forEach((g,i)=>eqs[i].gain.value=g)}
-audio.addEventListener('play',()=>{graph();if(actx)actx.resume()});
-// ---------- visualizer
-const fb=new Uint8Array(128),tb=new Uint8Array(256);
-function drawViz(c,W,H,mode,t){c.fillStyle='rgba(6,8,20,.35)';c.fillRect(0,0,W,H);
-  if(an){an.getByteFrequencyData(fb);an.getByteTimeDomainData(tb)}else{fb.fill(0);tb.fill(128)}
-  const hueBase=(t/30)%360;
-  if(mode===0){const n=40,bw=W/n;for(let i=0;i<n;i++){const v=fb[Math.floor(i*1.8)]/255,h=Math.max(2,v*H*.85);c.fillStyle=`hsl(${hueBase+i*6},85%,${45+v*20}%)`;c.fillRect(i*bw+1,H-h,bw-2,h);c.fillRect(i*bw+1,H-h-4,bw-2,1.5)}}
-  else if(mode===1){c.lineWidth=2.5;c.strokeStyle=`hsl(${hueBase},90%,60%)`;c.shadowBlur=10;c.shadowColor=c.strokeStyle;c.beginPath();for(let i=0;i<256;i++){const x=i/255*W,y=H/2+(tb[i]-128)/128*H*.45;i?c.lineTo(x,y):c.moveTo(x,y)}c.stroke();c.shadowBlur=0}
-  else{const cx=W/2,cy=H/2,r=Math.min(W,H)*.2,n=64;let avg=0;for(let i=0;i<n;i++)avg+=fb[i];avg/=n*255;
-    c.fillStyle=`hsla(${hueBase},80%,55%,.35)`;c.beginPath();c.arc(cx,cy,r*(.8+avg*.6),0,7);c.fill();
-    for(let i=0;i<n;i++){const a=i/n*Math.PI*2-Math.PI/2,v=fb[i]/255,l=6+v*Math.min(W,H)*.32;c.strokeStyle=`hsl(${hueBase+i*5},90%,60%)`;c.lineWidth=3;c.beginPath();c.moveTo(cx+Math.cos(a)*r,cy+Math.sin(a)*r);c.lineTo(cx+Math.cos(a)*(r+l),cy+Math.sin(a)*(r+l));c.stroke()}}
-  if(!cur()||audio.paused){c.fillStyle='rgba(255,255,255,.55)';c.font='12px sans-serif';c.textAlign='center';c.fillText(cur()?'Paused':'Play a song to see it move',W/2,18);c.textAlign='left'}}
-window.vizView=()=>({type:'viz',title:'Visualizer',canvas:true,mode:0,render(){return'<canvas id="cv" width="304" height="206"></canvas>'},
-  mount(){const c=$('#cv').getContext('2d');const loop=t=>{if(view()!==this||S.device==='Touch')return;drawViz(c,304,206,this.mode,t);requestAnimationFrame(loop)};requestAnimationFrame(loop)},
-  onSelect(){this.mode=(this.mode+1)%3}});
-function vizPage(){const p={nav:true,title:'Visualizer',cls:'tgame',noRefresh:true,mode:0,html(){return'<canvas width="304" height="330"></canvas><p>Tap to change style · EQ: '+esc(S.eq)+'</p>'},
-  bind(el){const cv=el.querySelector('canvas'),c=cv.getContext('2d');const loop=t=>{if(top()!==p||S.device!=='Touch')return;drawViz(c,304,330,p.mode,t);requestAnimationFrame(loop)};requestAnimationFrame(loop);cv.onclick=()=>p.mode=(p.mode+1)%3}};return p}
-const eqPage=()=>listPage('Equalizer',()=>Object.keys(EQ).map(k=>({main:k,val:k===S.eq?'✓':'',go:()=>{S.eq=k;save();applyEQ();trender()}})));
-// ---------- calculator
-function calcPage(){let cv='0',acc=null,op=null,fresh=true;
-  const calc=(a,b,o)=>o==='+'?a+b:o==='−'?a-b:o==='×'?a*b:a/b,fmtN=n=>isFinite(n)?String(+n.toPrecision(10)):'Error';
-  function key(k){if(/\d/.test(k)){cv=fresh||cv==='0'?k:cv.length<12?cv+k:cv;fresh=false}
-    else if(k==='.'){if(fresh){cv='0.';fresh=false}else if(!cv.includes('.'))cv+='.'}
-    else if(k==='C'){cv='0';acc=null;op=null;fresh=true}
-    else if(k==='±')cv=fmtN(-parseFloat(cv));else if(k==='%')cv=fmtN(parseFloat(cv)/100);
-    else{const v=parseFloat(cv);if(k==='='){if(op!=null&&acc!=null)cv=fmtN(calc(acc,v,op));acc=null;op=null}else{acc=op&&!fresh?calc(acc,v,op):v;cv=fmtN(acc);op=k}fresh=true}}
-  return{nav:true,title:'Calculator',cls:'tcalc',html(){return`<div class="cdisp">${cv}</div><div class="ckeys">`+['C','±','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','='].map(k=>`<button class="${/[÷×−+=]/.test(k)?'op':/[C±%]/.test(k)?'fn':''}${k==='0'?' zero':''}" data-k="${k}">${k}</button>`).join('')+'</div>'},
-    bind(el){el.querySelectorAll('.ckeys button').forEach(b=>b.onclick=()=>{key(b.dataset.k);el.querySelector('.cdisp').textContent=cv})}}}
-// ---------- notes
-let notes=[];try{notes=JSON.parse(localStorage.getItem('cwp-notes')||'[]')}catch(e){}
-const saveNotes=()=>{try{localStorage.setItem('cwp-notes',JSON.stringify(notes))}catch(e){}};
-const notesPage=()=>listPage('Notes',()=>[{main:'＋ New Note',go:()=>{const n={text:'',t:Date.now()};notes.unshift(n);saveNotes();return notePage(n)}},
-  ...notes.map(n=>({main:n.text.split('\n')[0]||'New Note',sub:new Date(n.t).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}),ch:1,go:()=>notePage(n)}))]);
-function notePage(n){return{nav:true,title:'Note',cls:'tnote',noRefresh:true,html(){return`<textarea placeholder="Type a note…">${esc(n.text)}</textarea><button class="tdel">Delete Note</button>`},
-  bind(el){const ta=el.querySelector('textarea');ta.oninput=()=>{n.text=ta.value;n.t=Date.now();saveNotes()};el.querySelector('.tdel').onclick=()=>{notes.splice(notes.indexOf(n),1);saveNotes();tback()};setTimeout(()=>ta.focus(),60)}}}
-// ---------- photos + camera
-const photos=[];
-const _add=addFiles;addFiles=function(files){const all=[...files],imgs=all.filter(f=>f.type.startsWith('image'));imgs.forEach(f=>photos.unshift(URL.createObjectURL(f)));
-  if(imgs.length)toast(imgs.length+' photo'+(imgs.length>1?'s':'')+' added');const rest=all.filter(f=>!f.type.startsWith('image'));if(rest.length||!imgs.length)_add(rest);else if(S.device==='Touch'&&!top().noRefresh)trender()};
-function photosPage(){return{nav:true,title:'Photos',html(){return photos.length?`<div class="tphotos">${photos.map((u,i)=>`<img src="${u}" data-i="${i}">`).join('')}</div>`:`<div class="tempty"><b>No photos</b>Take one with Camera, or drop images onto the page.</div>`},
-  bind(el){el.querySelectorAll('img').forEach(im=>im.onclick=()=>tpush(photoPage(+im.dataset.i)))}}}
-function photoPage(i){return{nav:true,title:(i+1)+' of '+photos.length,cls:'tphoto',html(){return`<img src="${photos[i]}">`},
-  bind(el){let x0=0;el.onpointerdown=e=>x0=e.clientX;el.onpointerup=e=>{const dx=e.clientX-x0;if(Math.abs(dx)>30){const j=i+(dx<0?1:-1);if(j>=0&&j<photos.length){T.stack[T.stack.length-1]=photoPage(j);trender()}}}}}}
-let stream=null;const stopCam=()=>{if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}};
-function camPage(){const p={nav:true,title:'Camera',cls:'tcam',noRefresh:true,facing:'user',
-  html(){return`<video autoplay playsinline muted></video><div class="tcambar"><button class="thumbp" title="Photos"></button><button class="shutter" title="Take photo"></button><button class="flip" title="Flip camera">⟲</button></div><div class="tflash"></div>`},
-  bind(el){const v=el.querySelector('video'),th=el.querySelector('.thumbp');
-    const start=async()=>{stopCam();try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:p.facing},audio:false});if(top()!==p){stopCam();return}v.srcObject=stream;v.style.transform=p.facing==='user'?'scaleX(-1)':''}
-      catch(e){v.outerHTML='<div class="tempty" style="flex:1"><b style="color:#eee">Camera unavailable</b>Allow camera access in your browser to take photos.</div>'}};
-    start();const setTh=()=>{th.style.backgroundImage=photos[0]?`url(${photos[0]})`:''};setTh();
-    el.querySelector('.shutter').onclick=()=>{if(!v.videoWidth)return;const c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;const x=c.getContext('2d');
-      if(p.facing==='user'){x.translate(c.width,0);x.scale(-1,1)}x.drawImage(v,0,0);photos.unshift(c.toDataURL('image/jpeg',.85));setTh();const f=el.querySelector('.tflash');f.classList.remove('go');void f.offsetWidth;f.classList.add('go')};
-    el.querySelector('.flip').onclick=()=>{p.facing=p.facing==='user'?'environment':'user';start()};th.onclick=()=>tpush(photosPage())}};return p}
-// ---------- weather (Open-Meteo, preset cities only)
-const CITIES=[['London',51.51,-0.13],['New York',40.71,-74.01],['Tokyo',35.68,139.69],['Paris',48.85,2.35],['Sydney',-33.87,151.21],['Dubai',25.2,55.27]];
-const WX=c=>c===0?['☀️','Clear']:c<=2?['🌤','Partly Cloudy']:c===3?['☁️','Cloudy']:c<=48?['🌫','Fog']:c<=57?['🌦','Drizzle']:c<=67?['🌧','Rain']:c<=77?['🌨','Snow']:c<=82?['🌧','Showers']:c<=86?['🌨','Snow Showers']:['⛈','Thunderstorm'];
-const wxc={};
-function wxPage(){const p={nav:true,title:'Weather',html(){const [n,la,lo]=CITIES[S.city%CITIES.length],d=wxc[n];
-    if(!d){wxc[n]='loading';fetch(`https://api.open-meteo.com/v1/forecast?latitude=${la}&longitude=${lo}&current=temperature_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=5`)
-      .then(r=>r.json()).then(j=>{wxc[n]=j.current?j:'err'}).catch(()=>{wxc[n]='err'}).then(()=>{if(top()===p)trender()})}
-    const cities=`<div class="wcities">${CITIES.map((c,i)=>`<button data-c="${i}" class="${i===S.city%CITIES.length?'on':''}">${c[0]}</button>`).join('')}</div>`;
-    if(!d||d==='loading')return`<div class="wx" style="background:linear-gradient(#4a90d9,#1f4f8a)"><div class="wc">${n}</div><div class="wd" style="margin-top:40px">Loading…</div>${cities}</div>`;
-    if(d==='err')return`<div class="wx" style="background:linear-gradient(#777,#333)"><div class="wc">${n}</div><div class="wd" style="margin-top:40px">Couldn't load the weather.<br>Check your connection.</div>${cities}</div>`;
-    const c=d.current,[ic,txt]=WX(c.weather_code),bg=c.is_day?'linear-gradient(#4a90d9,#1f4f8a)':'linear-gradient(#1c2541,#0b0c1e)',dd=d.daily;
-    return`<div class="wx" style="background:${bg}"><div class="wc">${n}</div><div class="wt">${Math.round(c.temperature_2m)}°</div><div class="wd">${ic} ${txt}</div>
-      <div class="wdays">${dd.time.map((t,i)=>`<div><span>${i?new Date(t+'T12:00').toLocaleDateString([],{weekday:'long'}):'Today'}</span><span>${WX(dd.weather_code[i])[0]}</span><span>${Math.round(dd.temperature_2m_max[i])}° / ${Math.round(dd.temperature_2m_min[i])}°</span></div>`).join('')}</div>${cities}</div>`},
-  bind(el){el.querySelectorAll('.wcities button').forEach(b=>b.onclick=()=>{S.city=+b.dataset.c;save();trender()})}};return p}
-// ---------- settings
-const setPage=()=>listPage('Settings',()=>[
-  {main:'Wallpaper',val:(S.wall%WALLS.length+1)+' of '+WALLS.length,go:()=>{S.wall=(S.wall+1)%WALLS.length;save();applyWall();trender()}},
-  {main:'Brightness',val:S.bright+'%',go:()=>{cycleBright();trender()}},
-  {main:'Equalizer',val:S.eq,ch:1,go:eqPage},
-  {main:'Shuffle',val:S.shuffle?'On':'Off',go:()=>{S.shuffle=!S.shuffle;save();trender()}},
-  {main:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();trender()}},
-  {main:'Device',val:S.model==='Phone'?'Phone':'Touch Player',go:()=>{if(S.model!=='Phone')S.model='Phone';else{S.model='Touch';S.device='Classic'}save();applyDevice()}},
-  {main:'Lock Now',go:()=>{lockNow()}},
-  {main:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');trender()}}]);
-// ---------- home screen with dock
-const A=(n,g,c,f)=>[n,g,c,f];
-const grid=[A('Cover Flow','💿','#555,#111',cfPage),A('Clock','🕒','#3a3a3a,#000',clockPage),A('Stopwatch','⏱','#f7a531,#d35400',swPage),A('Brick','🧱','#2bc48a,#11785a',brickPage),
-  A('Calculator','🧮','#ffb347,#e06d00',calcPage),A('Notes','📝','#fff3a8,#e8c33a',notesPage),A('Camera','📷','#9aa4ad,#4a535c',camPage),A('Weather','⛅','#6ec6ff,#1e6fd9',wxPage),
-  A('Visualizer','🌈','#ff5fa2,#7b2ff7',vizPage),A('Equalizer','🎚','#e0e0e0,#8a8a8a',eqPage),A('Add Music','＋','#b39ddb,#6a4cc2',()=>{$('#file').click()})];
-const dock=[A('Music','♫','#ff7a59,#d6246e',musicPage),A('Now Playing','▶','#4facfe,#1d4ed8',npPage),A('Photos','🌻','#ffe259,#ffa751',photosPage),A('Settings','⚙️','#c3cad1,#6c7a89',setPage)];
-const icon=(a,k)=>`<button class="tapp" data-k="${k}"><i style="background:linear-gradient(${a[2]})">${a[1]}</i>${a[0]}</button>`;
-home.html=()=>`<div class="tgrid">${grid.map((a,i)=>icon(a,'g'+i)).join('')}</div><div class="tdock">${dock.map((a,i)=>icon(a,'d'+i)).join('')}</div>`;
-home.bind=el=>el.querySelectorAll('.tapp').forEach(b=>b.onclick=()=>{const k=b.dataset.k,a=(k[0]==='g'?grid:dock)[+k.slice(1)];tpush(a[3]())});
-TT.pages={cfPage,clockPage,swPage,brickPage,calcPage,notesPage,camPage,wxPage,vizPage,eqPage,musicPage,npPage,photosPage,setPage,grid,dock,icon};
-// ---------- lock screen, sleep, banner, control center
-const mk=c=>{const d=document.createElement('div');d.className=c;scr.appendChild(d);return d};
-const lock=mk('tlock'),ban=mk('tban'),cc=mk('tcc'),off=mk('toff');
-const pw=document.createElement('div');pw.className='tpower';pw.title='Sleep / Wake';$('#touch').appendChild(pw);
-let locked=true,dragging=false;
-function renderLock(){if(dragging)return;const t=cur();
-  lock.innerHTML=`<div class="lbar"><div class="lt"></div><div class="ld"></div></div>`+(t?`<div class="lnp">${thumb(t,t.album)}<div class="m"><b>${esc(t.title)}</b><small>${esc(t.artist)}</small></div><button data-a="prev">⏮</button><button data-a="play">${audio.paused?'▶':'⏸'}</button><button data-a="next">⏭</button></div>`:'')+
-    `<div class="slide"><div class="trk"><div class="knob">➜</div><span>slide to unlock</span></div></div>`;
-  lockTime();lock.querySelectorAll('.lnp button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;a==='play'?togglePlay():a==='next'?next(false):prev()});
-  const k=lock.querySelector('.knob'),trk=lock.querySelector('.trk');let x0=0,x=0;const max=()=>trk.clientWidth-66;
-  k.onpointerdown=e=>{k.setPointerCapture(e.pointerId);dragging=true;x0=e.clientX-x;k.style.transition='none'};
-  k.onpointermove=e=>{if(!dragging)return;x=Math.min(max(),Math.max(0,e.clientX-x0));k.style.transform=`translateX(${x}px)`;trk.querySelector('span').style.opacity=1-x/max()};
-  k.onpointerup=()=>{dragging=false;k.style.transition='transform .25s';if(x>max()*.85){unlock()}else{x=0;k.style.transform='';trk.querySelector('span').style.opacity=1}}}
-function lockTime(){const n=new Date(),a=lock.querySelector('.lt'),b=lock.querySelector('.ld');if(a){a.textContent=n.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});b.textContent=n.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})}}
-function unlock(){locked=false;lock.classList.add('hide');trender();if(TT.flyIn)TT.flyIn()}
-function lockNow(){locked=true;cc.classList.remove('on');lock.classList.remove('hide');renderLock()}
-pw.onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow()}else{off.classList.add('on');lockNow()}};
-$('#thomebtn').onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow();return}if(locked)return;if(cc.classList.contains('on')){cc.classList.remove('on');return}TT.goHome()};
-const _load=load;load=function(){_load();const t=cur();if(t&&S.device==='Touch'&&!off.classList.contains('on')&&(locked||top().title!=='Now Playing')){
-  ban.innerHTML=`${thumb(t,t.album)}<div><small>NOW PLAYING</small><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></div>`;ban.classList.add('on');clearTimeout(ban.t);ban.t=setTimeout(()=>ban.classList.remove('on'),2600)}};
-function renderCC(){cc.innerHTML=`<div class="r2">☀︎<input type="range" class="ccb" min="25" max="100" value="${S.bright}">☀️</div><div class="r2">🔈<input type="range" class="ccv" min="0" max="100" value="${Math.round(audio.volume*100)}">🔊</div>
-  <div class="tg"><button data-a="play"><span>${audio.paused?'▶':'⏸'}</span>${audio.paused?'Play':'Pause'}</button><button data-a="sh" class="${S.shuffle?'on':''}"><span>🔀</span>Shuffle</button><button data-a="rp" class="${S.repeat!=='Off'?'on':''}"><span>${S.repeat==='One'?'🔂':'🔁'}</span>Repeat ${S.repeat==='Off'?'':S.repeat}</button><button data-a="eq" class="${S.eq!=='Flat'?'on':''}"><span>🎚</span>${esc(S.eq)}</button>
-  <button data-a="wall"><span>🖼</span>Wallpaper</button><button data-a="viz"><span>🌈</span>Visualizer</button><button data-a="cam"><span>📷</span>Camera</button><button data-a="lock"><span>🔒</span>Lock</button></div><div class="grab"></div>`;
-  cc.querySelector('.ccb').oninput=e=>{S.bright=+e.target.value;save();applyBright()};cc.querySelector('.ccv').oninput=e=>{audio.volume=e.target.value/100};
-  cc.querySelectorAll('.tg button').forEach(b=>b.onclick=()=>{const a=b.dataset.a;
-    if(a==='play')togglePlay();else if(a==='sh'){S.shuffle=!S.shuffle;save()}else if(a==='rp'){S.repeat={Off:'All',All:'One',One:'Off'}[S.repeat];save()}else if(a==='eq')cycleEQ();
-    else if(a==='wall'){S.wall=(S.wall+1)%WALLS.length;save();applyWall()}else if(a==='lock'){lockNow();return}
-    else{cc.classList.remove('on');tpush(a==='viz'?vizPage():camPage());return}renderCC();if(!top().noRefresh)trender()});
-  cc.querySelector('.grab').onclick=()=>cc.classList.remove('on')}
-$('.tsb').onclick=()=>{if(locked)return;renderCC();cc.classList.toggle('on')};
-// ---------- hooks
-const _r=render;render=function(){_r();if(S.device==='Touch'&&locked&&!lock.classList.contains('hide'))renderLock()};
-const _ad=window.applyDevice;window.applyDevice=function(){_ad();if(S.device==='Touch')lockNow();else stopCam()};
-setInterval(()=>{lockTime();if(stream&&(S.device!=='Touch'||top().cls!=='tcam'||locked))stopCam()},1000);
-renderCC();renderLock();if(S.device!=='Touch')lock.classList.add('hide');else lock.classList.remove('hide');
-})();
-</script>
-
-<style>
-/* ---- motion polish ---- */
-.tghost{pointer-events:none}
-.tapp i{transition:transform .12s}.tapp:active i{transform:scale(.9);filter:brightness(.75)}
-.jiggle .tapp i{animation:jig .26s ease-in-out infinite alternate}
-.jiggle .tapp:nth-child(2n) i{animation-delay:-.13s;animation-direction:alternate-reverse}
-@keyframes jig{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
-.tlock.hide{transform:none;opacity:0;pointer-events:none;transition:opacity .35s .2s}
-.tlock{transition:opacity .25s}
-.tlock .lbar,.tlock .slide{transition:transform .38s cubic-bezier(.5,0,.2,1)}
-.tlock .lnp{transition:opacity .25s,transform .3s}
-.tlock.hide .lbar{transform:translateY(-110%)}.tlock.hide .slide{transform:translateY(110%)}.tlock.hide .lnp{opacity:0;transform:scale(.9)}
-.toff{display:block!important;opacity:0;pointer-events:none;transition:opacity .35s}.toff.on{opacity:1;pointer-events:auto}
-.tcc{transition:transform .45s cubic-bezier(.2,1,.3,1)}
-.tban{transition:transform .5s cubic-bezier(.2,1.3,.4,1)}
-.trow{transition:background .15s}
-.row{transition:background .12s}
-.cghost{pointer-events:none}
-/* ---- first-gen phone frame ---- */
-.touch.phone{border-radius:38px;background:linear-gradient(160deg,#1e1e20,#000);box-shadow:0 30px 60px rgba(0,0,0,.45),0 0 0 7px #d3d6da,0 0 0 8px #8e9196,inset 0 0 0 1px #2a2a2a}
-.touch.phone:before{top:31px;width:56px;height:7px;background:#333}
-.touch.phone .tpower{background:linear-gradient(#333,#000)}
-.touch.phone .thome{background:linear-gradient(#111,#262628)}
-/* ---- phone app ---- */
-.tphone{background:linear-gradient(#2b2b2b,#000);display:flex;flex-direction:column;padding:6px 14px 8px}
-.pnum{height:52px;color:#fff;font-size:30px;text-align:center;font-weight:300;line-height:52px;overflow:hidden;white-space:nowrap}
-.pkeys{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
-.pkeys button{height:57px;border-radius:10px;border:1px solid #444;background:linear-gradient(#5a5a5e,#2a2a2d);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;transition:transform .08s}
-.pkeys button:active{transform:scale(.94);background:linear-gradient(#4a8af5,#1d55c7)}
-.pkeys b{font-size:24px;font-weight:400}.pkeys small{font-size:9px;letter-spacing:1px;color:#aaa;height:10px}
-.pbar{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:7px;margin-top:9px}
-.pbar button{height:46px;border-radius:10px;border:1px solid #444;background:linear-gradient(#444,#222);color:#fff;font-size:14px;cursor:pointer;font-family:inherit;transition:transform .08s}
-.pbar button:active{transform:scale(.95)}
-.pbar .pcall{background:linear-gradient(#5fd35f,#1f8a1f);border-color:#176d17;font-weight:700;font-size:17px}
-.tcall{background:linear-gradient(#3b4555,#0d1117);color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px 18px 16px}
-.cav{width:84px;height:84px;border-radius:50%;background:linear-gradient(#8aa0bf,#4c6283);display:flex;align-items:center;justify-content:center;font-size:40px;margin-top:14px;animation:ring 1.4s infinite}
-@keyframes ring{from{box-shadow:0 0 0 0 rgba(255,255,255,.45)}to{box-shadow:0 0 0 24px rgba(255,255,255,0)}}
-.connected .cav{animation:none}
-.cname{font-size:24px;margin-top:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cstat{font-size:14px;color:#bbb;margin-top:4px;font-variant-numeric:tabular-nums}
-.csim{font-size:10px;color:#778;margin-top:2px}
-.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.25);border-radius:12px;overflow:hidden;margin-top:auto;width:100%}
-.cgrid button{height:66px;background:rgba(30,35,45,.92);border:0;color:#fff;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:inherit;transition:background .15s}
-.cgrid button span{font-size:22px}.cgrid button.on{background:#e8eef7;color:#123}
-.cend{margin-top:12px;width:100%;height:50px;border-radius:12px;border:1px solid #7a1010;background:linear-gradient(#f26a6a,#b71c1c);color:#fff;font-size:18px;font-weight:700;cursor:pointer}
-/* ---- messages ---- */
-.tmsg{display:flex;flex-direction:column;background:#dbe2ed;overflow:hidden}
-.mlist{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:6px;scroll-behavior:smooth}
-.bub{max-width:76%;padding:7px 11px;border-radius:16px;font-size:14px;line-height:1.3;overflow-wrap:anywhere;box-shadow:0 1px 1px rgba(0,0,0,.2);-webkit-user-select:text;user-select:text;color:#111}
-.bub.me{align-self:flex-end;background:linear-gradient(#cdf7a0,#86d443);border-bottom-right-radius:4px;transform-origin:right bottom}
-.bub.them{align-self:flex-start;background:linear-gradient(#fff,#e4e4e4);border-bottom-left-radius:4px;transform-origin:left bottom}
-.bub.new{animation:bubIn .35s cubic-bezier(.2,1.4,.4,1)}@keyframes bubIn{from{transform:scale(.3);opacity:0}}
-.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:#888;margin:0 1px;animation:dot 1s infinite}
-.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
-@keyframes dot{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-4px);opacity:1}}
-.deliv{align-self:flex-end;font-size:10px;color:#667;margin-top:-3px}
-.mbar{display:flex;gap:6px;padding:6px;background:linear-gradient(#e9edf2,#c5ccd6);border-top:1px solid #9aa4b1;flex:none;margin:0}
-.mbar input{flex:1;border:1px solid #9aa4b1;border-radius:14px;padding:6px 10px;font-size:14px;outline:none;-webkit-user-select:text;user-select:text;min-width:0}
-.mbar button{border:1px solid #3d6e1f;border-radius:14px;background:linear-gradient(#8fd45a,#4a9a20);color:#fff;font-weight:700;padding:0 12px;cursor:pointer}
-.mto{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#fff;border-bottom:1px solid #ccc;flex:none;font-size:14px;color:#777;margin:0}
-.mto input{flex:1;border:0;outline:none;font-size:14px;-webkit-user-select:text;user-select:text}
-</style>
-<script>
-(function(){
-const {T,trender,top,home,listPage,tback,tpush}=TT,P=TT.pages;
-const tpage=$('#tpage'),scr=$('.tscreen'),E='cubic-bezier(.2,.8,.2,1)';
-if(!S.model)S.model='Touch';
-// ---------- page transitions: app zoom from icon, iOS-style slide inside apps
-let finishPrev=null;
-TT.anim=function(kind,mut){
-  if(finishPrev)finishPrev();
-  const g=document.createElement('div');g.className='tpage tghost';
-  while(tpage.firstChild)g.appendChild(tpage.firstChild);
-  g.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
-  const front=kind==='back'||kind==='close';tpage.parentNode.insertBefore(g,front?tpage.nextSibling:tpage);
-  mut();trender();
-  const o=T.origin||{x:152,y:228},org=`${o.x}px ${o.y-20}px`;let a,b,d=330;
-  if(kind==='push'){a=[{transform:'translateX(100%)'},{transform:'none'}];b=[{transform:'none',filter:'brightness(1)'},{transform:'translateX(-30%)',filter:'brightness(.6)'}]}
-  else if(kind==='back'){a=[{transform:'translateX(-30%)',filter:'brightness(.6)'},{transform:'none',filter:'brightness(1)'}];b=[{transform:'none'},{transform:'translateX(100%)'}]}
-  else if(kind==='open'){d=400;tpage.style.transformOrigin=org;a=[{transform:'scale(.1)',opacity:0,borderRadius:'40px'},{transform:'none',opacity:1,borderRadius:'0'}];b=[{transform:'none',opacity:1},{transform:'scale(1.3)',opacity:0}];g.style.transformOrigin=org}
-  else{d=380;g.style.transformOrigin=org;a=[{transform:'scale(1.3)',opacity:0},{transform:'none',opacity:1}];b=[{transform:'none',opacity:1,borderRadius:'0'},{transform:'scale(.1)',opacity:0,borderRadius:'40px'}]}
-  tpage.animate(a,{duration:d,easing:E});const an=g.animate(b,{duration:d,easing:E,fill:'forwards'});
-  const done=()=>{g.remove();tpage.style.transformOrigin='';finishPrev=null};finishPrev=done;an.onfinish=done;setTimeout(()=>{if(finishPrev===done)done()},d+120)};
-// ---------- home: per-device app sets, long-press jiggle, icon fly-in
-let jig=false;
-const extra=[['Phone','📞','#7be07b,#1f9a2b',()=>phonePage()],['Messages','💬','#9be86f,#2fa31a',()=>msgsPage()]];
-const all=[...P.grid,...P.dock,...extra],by=n=>all.find(a=>a[0]===n);
-const sets={Touch:{grid:P.grid,dock:P.dock},
-  Phone:{grid:['Photos','Camera','Weather','Calculator','Notes','Clock','Stopwatch','Brick','Cover Flow','Now Playing','Visualizer','Add Music'].map(by),dock:['Phone','Messages','Music','Settings'].map(by)}};
-const set=()=>sets[S.model]||sets.Touch;
-home.html=()=>{const s=set();return`<div class="tgrid ${jig?'jiggle':''}">${s.grid.map((a,i)=>P.icon(a,'g'+i)).join('')}</div><div class="tdock ${jig?'jiggle':''}">${s.dock.map((a,i)=>P.icon(a,'d'+i)).join('')}</div>`};
-home.bind=el=>{const s=set();el.querySelectorAll('.tapp').forEach(b=>{let tm=null,long=false;
-  b.onpointerdown=()=>{long=false;tm=setTimeout(()=>{long=true;jig=true;el.querySelectorAll('.tgrid,.tdock').forEach(x=>x.classList.add('jiggle'))},550)};
-  b.onpointerup=b.onpointerleave=()=>clearTimeout(tm);
-  b.onclick=()=>{if(long||jig)return;const k=b.dataset.k,a=(k[0]==='g'?s.grid:s.dock)[+k.slice(1)],r=b.querySelector('i').getBoundingClientRect(),sr=scr.getBoundingClientRect();
-    T.origin={x:r.left+r.width/2-sr.left,y:r.top+r.height/2-sr.top};tpush(a[3]())}})};
-TT.goHome=()=>{if(jig){jig=false;tpage.querySelectorAll('.jiggle').forEach(x=>x.classList.remove('jiggle'));return}if(T.stack.length===1)return;TT.anim('close',()=>{T.stack.length=1})};
-TT.flyIn=()=>{if(T.stack.length!==1)return;const s=scr.getBoundingClientRect(),cx=s.left+s.width/2,cy=s.top+s.height/2;
-  tpage.querySelectorAll('.tapp').forEach((b,i)=>{const r=b.getBoundingClientRect(),dx=r.left+r.width/2-cx,dy=r.top+r.height/2-cy;
-    b.animate([{transform:`translate(${dx}px,${dy}px) scale(1.9)`,opacity:0},{transform:'none',opacity:1}],{duration:560,delay:120+i*14,easing:E,fill:'backwards'})})};
-// ---------- classic: sliding menus
-const cbody=$('#body');let depth=stack.length;
-const _r=render;render=function(){const d=stack.length;
-  if(d!==depth&&S.device!=='Touch'){const fwd=d>depth;depth=d;const g=document.createElement('div');g.className='body cghost';
-    while(cbody.firstChild)g.appendChild(cbody.firstChild);g.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));cbody.after(g);cbody.dataset.v='';_r();
-    const o={duration:280,easing:'cubic-bezier(.3,.7,.3,1)'};cbody.animate([{transform:`translateX(${fwd?100:-100}%)`},{transform:'none'}],o);
-    g.animate([{transform:'none'},{transform:`translateX(${fwd?-100:100}%)`}],{...o,fill:'forwards'}).onfinish=()=>g.remove();setTimeout(()=>g.remove(),420);return}
-  depth=d;_r()};
-// ---------- device switching with a flip, and the phone model
-function applyModel(){const ph=S.model==='Phone';$('#touch').classList.toggle('phone',ph);
-  $('.tsb span').innerHTML=ph?'<span style="letter-spacing:-1px">▂▄▆█</span> Carrier <b style="font-size:10px">E</b>':'Music Player';
-  if(S.device==='Touch')$('.help').innerHTML=ph?'A first-gen style phone: make (pretend) calls, text the built-in Buddy bot, play music. Press and hold an icon to make them wiggle; the round button stops it.':'Tap the screen like a phone. Tap the status bar for the control center. Press and hold an icon to make them wiggle.'}
-const _ad=window.applyDevice;window.applyDevice=function(){jig=false;_ad();applyModel();depth=stack.length;
-  const el=S.device==='Touch'?$('#touch'):$('#device');el.animate([{transform:'perspective(1400px) rotateY(-75deg) scale(.85)',opacity:0},{transform:'none',opacity:1}],{duration:600,easing:E})};
-applyModel();if(S.device==='Touch')trender();
-// ---------- Phone app (simulated calls)
-let ac=()=>{actx=actx||new AudioContext();return actx};
-function tone(fs,dur,vol=.07){try{const c=ac(),g=c.createGain();g.gain.value=vol;g.connect(c.destination);fs.forEach(f=>{const o=c.createOscillator();o.frequency.value=f;o.connect(g);o.start();o.stop(c.currentTime+dur)})}catch(e){}}
-const KEYS=[['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['*',''],['0','+'],['#','']];
-const dtmf=k=>{const i='123456789*0#'.indexOf(k);tone([[697,770,852,941][i/3|0],[1209,1336,1477][i%3]],.14)};
-const recents=[];
-function phonePage(){let num='';return{nav:true,title:'Keypad',cls:'tphone',
-  html(){return`<div class="pnum">${esc(num)}</div><div class="pkeys">${KEYS.map(k=>`<button data-k="${k[0]}"><b>${k[0]}</b><small>${k[1]}</small></button>`).join('')}</div>
-    <div class="pbar"><button class="prec">Recents</button><button class="pcall">📞 Call</button><button class="pdel">⌫</button></div>`},
-  bind(el){const show=()=>el.querySelector('.pnum').textContent=num;
-    el.querySelectorAll('.pkeys button').forEach(b=>b.onclick=()=>{if(num.length<16){num+=b.dataset.k;dtmf(b.dataset.k);show()}});
-    el.querySelector('.pdel').onclick=()=>{num=num.slice(0,-1);show()};
-    el.querySelector('.prec').onclick=()=>tpush(listPage('Recents',()=>recents.length?recents.map(r=>({main:r.num,sub:new Date(r.t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})+' · '+fmt(r.dur),go:()=>callPage(r.num)})):[{main:'No recent calls'}]));
-    el.querySelector('.pcall').onclick=()=>{if(num)tpush(callPage(num));else{const p=el.querySelector('.pnum');p.animate([{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250})}}}}}
-function callPage(num){let start=0,iv=null;const p={title:'Call',cls:'tcall',noRefresh:true,
-  html(){return`<div class="cav">👤</div><div class="cname">${esc(num)}</div><div class="cstat">calling…</div><div class="csim">pretend call · nobody is really dialed</div>
-    <div class="cgrid">${[['mute','🔇'],['keypad','⌨️'],['speaker','🔊'],['add call','➕'],['hold','⏸'],['contacts','👥']].map(b=>`<button><span>${b[1]}</span>${b[0]}</button>`).join('')}</div><button class="cend">End Call</button>`},
-  bind(el){if(!wasPaused0)wasPaused0=audio.paused?'p':'r';audio.pause();tone([440,480],1.2,.05);
-    const st=el.querySelector('.cstat');const t0=setTimeout(()=>{start=Date.now();el.classList.add('connected');tone([660],.08)},2600);
-    iv=setInterval(()=>{if(top()!==p){clearInterval(iv);clearTimeout(t0);return}if(start)st.textContent=fmt((Date.now()-start)/1000)},250);
-    el.querySelectorAll('.cgrid button').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
-    el.querySelector('.cend').onclick=()=>{clearInterval(iv);clearTimeout(t0);recents.unshift({num,t:Date.now(),dur:start?(Date.now()-start)/1000:0});
-      st.textContent='call ended';tone([480],.15);if(wasPaused0==='r')audio.play();wasPaused0=null;setTimeout(tback,450)}}};return p}
-let wasPaused0=null;
-// ---------- Messages (local only, with a little chat bot)
-let threads=null;try{threads=JSON.parse(localStorage.getItem('cwp-msgs'))}catch(e){}
-if(!Array.isArray(threads))threads=[{name:'Buddy',bot:1,msgs:[{me:0,text:'Hey! Text me anything. Try "what\'s playing?" or "tell me a joke".',t:Date.now()}]}];
-const saveT=()=>{try{localStorage.setItem('cwp-msgs',JSON.stringify(threads))}catch(e){}};
-const pick=a=>a[Math.random()*a.length|0];
-const JOKES=['Why did the MP3 go to therapy? Too many issues with compression. 😅','I told my phone a joke. It didn\'t laugh, but it vibrated a little.','Why are playlists bad at secrets? They always shuffle the truth.','My battery and I have a lot in common: we both die at 1%.'];
-function botSay(q){q=q.toLowerCase();const t=cur();
-  if(/\b(hi|hey|hello|yo|sup)\b/.test(q))return pick(['Hey! 👋','Hi there!','Yo! What\'s up?']);
-  if(/play|song|music|listen/.test(q))return t?`You're listening to "${t.title}" by ${t.artist} ${audio.paused?'(paused)':'🎵'}`:'Nothing\'s playing yet. Drop some music onto the page!';
-  if(/time/.test(q))return'It\'s '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})+' ⏰';
-  if(/joke|funny/.test(q))return pick(JOKES);
-  if(/weather/.test(q))return'Check the Weather app ⛅';
-  if(/how are/.test(q))return'Doing great, thanks for asking! 😊';
-  if(/\?\s*$/.test(q))return pick(['Hmm, good question 🤔','Probably!','Ask me again later 😄']);
-  return pick(['Nice!','Haha 😂','Tell me more','Cool cool','👍','For real?','Love that'])}
-const msgsPage=()=>listPage('Messages',()=>[{main:'＋ New Message',go:()=>newMsgPage()},...threads.map(th=>({main:th.name,sub:(th.msgs[th.msgs.length-1]||{}).text||'',ch:1,go:()=>threadPage(th)}))]);
-const bubbles=(th,fresh)=>th.msgs.map((m,i)=>`<div class="bub ${m.me?'me':'them'} ${fresh&&i===th.msgs.length-1?'new':''}">${esc(m.text)}</div>`).join('')+
-  (th.msgs.length&&th.msgs[th.msgs.length-1].me&&!th.bot?'<div class="deliv">Delivered</div>':'');
-const bar='<form class="mbar"><input placeholder="Text Message" maxlength="300" autocomplete="off"><button>Send</button></form>';
-function threadPage(th){const p={nav:true,title:th.name,cls:'tmsg',noRefresh:true,
-  html(){return`<div class="mlist">${bubbles(th)}</div>${bar}`},
-  bind(el){const list=el.querySelector('.mlist'),inp=el.querySelector('.mbar input');const draw=f=>{list.innerHTML=bubbles(th,f);list.scrollTop=1e6};list.scrollTop=1e6;
-    el.querySelector('.mbar').onsubmit=e=>{e.preventDefault();const text=inp.value.trim();if(!text)return;inp.value='';th.msgs.push({me:1,text,t:Date.now()});threads.splice(threads.indexOf(th),1);threads.unshift(th);saveT();draw(true);tone([1400],.05,.04);
-      if(th.bot){setTimeout(()=>{if(top()!==p)return;list.insertAdjacentHTML('beforeend','<div class="bub them new typing"><span></span><span></span><span></span></div>');list.scrollTop=1e6},500);
-        setTimeout(()=>{th.msgs.push({me:0,text:botSay(text),t:Date.now()});saveT();if(top()===p){draw(true);tone([1000,1500],.09,.04)}},1500+Math.random()*700)}};
-    setTimeout(()=>inp.focus(),400)}};return p}
-function newMsgPage(){return{nav:true,title:'New Message',cls:'tmsg',noRefresh:true,
-  html(){return`<form class="mto"><span>To:</span><input class="toin" placeholder="Name" autocomplete="off"></form><div class="mlist"></div>${bar}`},
-  bind(el){const to=el.querySelector('.toin'),inp=el.querySelector('.mbar input');el.querySelector('.mto').onsubmit=e=>{e.preventDefault();inp.focus()};
-    el.querySelector('.mbar').onsubmit=e=>{e.preventDefault();const text=inp.value.trim(),name=to.value.trim()||'Unknown';if(!text)return;
-      let th=threads.find(t=>t.name.toLowerCase()===name.toLowerCase());if(!th){th={name,msgs:[]};threads.unshift(th)}th.msgs.push({me:1,text,t:Date.now()});saveT();
-      T.stack[T.stack.length-1]=threadPage(th);trender()};setTimeout(()=>to.focus(),400)}}}
-})();
-</script>
-
-<style>
-.dswitch{display:flex;gap:4px;padding:4px;border-radius:14px;background:rgba(255,255,255,.55);box-shadow:inset 0 1px 2px rgba(0,0,0,.15),0 1px 0 #fff;backdrop-filter:blur(6px)}
-.dswitch button{border:0;background:none;padding:8px 14px;border-radius:10px;font:600 13px -apple-system,"Helvetica Neue",Arial,sans-serif;color:#4a525c;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s,color .2s,box-shadow .2s}
-.dswitch button:hover{color:#111}
-.dswitch button.on{background:#fff;color:#111;box-shadow:0 1px 4px rgba(0,0,0,.18)}
-.dswitch svg{width:14px;height:14px}
-</style>
-<div class="dswitch" id="dswitch">
- <button data-d="Classic"><svg viewBox="0 0 14 14"><rect x="3" y="1" width="8" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="7" cy="9" r="2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>Click Wheel</button>
- <button data-d="Touch"><svg viewBox="0 0 14 14"><rect x="3.5" y="1" width="7" height="12" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 11h2" stroke="currentColor" stroke-width="1.2"/></svg>Touch Player</button>
- <button data-d="Phone"><svg viewBox="0 0 14 14"><rect x="3" y="1" width="8" height="12" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="7" cy="11" r=".9" fill="currentColor"/></svg>Phone</button>
-</div>
-<script>
-(function(){const sw=$('#dswitch');document.body.insertBefore(sw,$('.help').nextSibling);
-const mark=()=>{const cur=S.device==='Classic'?'Classic':S.model==='Phone'?'Phone':'Touch';sw.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.d===cur))};
-sw.querySelectorAll('button').forEach(b=>b.onclick=()=>{const d=b.dataset.d;if(b.classList.contains('on'))return;
-  if(d==='Classic')S.device='Classic';else{S.device='Touch';S.model=d}save();applyDevice()});
-const _ad=window.applyDevice;window.applyDevice=function(){_ad();mark()};mark()})();
+const ERAS={
+  original:{name:'The original era',years:'2007 – 2012',c:'var(--e1)',hex:'#f5b544',blurb:'Glossy icons, a home button and a 3.5" to 4" screen.'},
+  flat:{name:'The flat era',years:'2013 – 2016',c:'var(--e2)',hex:'#38bdf8',blurb:'A flat redesign, Touch ID and bigger screens.'},
+  notch:{name:'The notch era',years:'2017 – 2021',c:'var(--e3)',hex:'#a78bfa',blurb:'Edge-to-edge screens, Face ID and gestures instead of a home button.'},
+  island:{name:'The Dynamic Island era',years:'2022 – today',c:'var(--e4)',hex:'#f472b6',blurb:'The notch becomes an island, USB-C arrives and Apple Intelligence lands.'}};
+// front: home | touchid | notch | island
+const G=[
+ {id:'2g',name:'iPhone',date:'2007-06-29',era:'original',price:'$499',display:'3.5"',chip:'Samsung ARM11, 412 MHz',storage:'4 / 8 GB (16 GB later)',camera:'2 MP',network:'2G (EDGE)',os:'iPhone OS 1',front:'home',dims:[115,61],col:'#c9ccd1',
+  feats:['Multi-touch screen with pinch to zoom','A real web browser on a phone','Visual Voicemail','iPod built in'],fact:'It had no App Store, no copy and paste, and no 3G.'},
+ {id:'3g',name:'iPhone 3G',date:'2008-07-11',era:'original',price:'$199 (on contract)',display:'3.5"',chip:'Samsung ARM11, 412 MHz',storage:'8 / 16 GB',camera:'2 MP',network:'3G',os:'iPhone OS 2',front:'home',dims:[115.5,62.1],col:'#1b1b1d',
+  feats:['3G data','GPS','The App Store opened with about 500 apps','Plastic back in black or white'],fact:'The App Store launched the day before, on July 10, 2008.'},
+ {id:'3gs',name:'iPhone 3GS',date:'2009-06-19',era:'original',price:'$199 (on contract)',display:'3.5"',chip:'ARM Cortex-A8, 600 MHz',storage:'16 / 32 GB',camera:'3 MP',network:'3G',os:'iPhone OS 3',front:'home',dims:[115.5,62.1],col:'#f2f2f2',
+  feats:['The "S" stood for speed','Video recording','Voice Control','Digital compass'],fact:'iPhone OS 3 finally added copy and paste.'},
+ {id:'4',name:'iPhone 4',date:'2010-06-24',era:'original',price:'$199 (on contract)',display:'3.5" Retina',chip:'A4',storage:'16 / 32 GB',camera:'5 MP',network:'3G',os:'iOS 4',front:'home',dims:[115.2,58.6],col:'#111',
+  feats:['Retina display at 326 pixels per inch','Front camera and FaceTime','Glass front and back with a steel band','Gyroscope'],fact:'Its antenna issue led to the famous "you\'re holding it wrong" moment and free bumper cases.'},
+ {id:'4s',name:'iPhone 4S',date:'2011-10-14',era:'original',price:'$199 (on contract)',display:'3.5" Retina',chip:'A5 (dual-core)',storage:'16 / 32 / 64 GB',camera:'8 MP',network:'3G',os:'iOS 5',front:'home',dims:[115.2,58.6],col:'#f4f4f4',
+  feats:['Siri','8 MP camera with 1080p video','iCloud and iMessage arrived with iOS 5'],fact:'It was announced on October 4, 2011, the day before Steve Jobs died.'},
+ {id:'5',name:'iPhone 5',date:'2012-09-21',era:'original',price:'$199 (on contract)',display:'4"',chip:'A6',storage:'16 / 32 / 64 GB',camera:'8 MP',network:'4G LTE',os:'iOS 6',front:'home',dims:[123.8,58.6],col:'#2a2a2c',
+  feats:['First taller screen: 4 inches','Lightning connector replaced the 30-pin dock','LTE','Aluminum unibody'],fact:'iOS 6 swapped Google Maps for Apple Maps, with a rocky start.'},
+ {id:'5s',name:'iPhone 5s & 5c',date:'2013-09-20',era:'flat',price:'$199 / $99 (on contract)',display:'4"',chip:'A7 (first 64-bit phone chip)',storage:'16 / 32 / 64 GB',camera:'8 MP',network:'4G LTE',os:'iOS 7',front:'touchid',dims:[123.8,58.6],col:'#d9b77e',
+  feats:['Touch ID fingerprint sensor','First 64-bit chip in a smartphone','5c came in bright plastic colors','iOS 7 flat redesign'],fact:'The gold 5s was so popular it sold out for weeks.',variants:'iPhone 5s, iPhone 5c'},
+ {id:'6',name:'iPhone 6 & 6 Plus',date:'2014-09-19',era:'flat',price:'$199 / $299 (on contract)',display:'4.7" / 5.5"',chip:'A8',storage:'16 / 64 / 128 GB',camera:'8 MP',network:'4G LTE',os:'iOS 8',front:'touchid',dims:[138.1,67],col:'#b9bcc2',
+  feats:['Much bigger screens','Apple Pay with NFC','Rounded aluminum design','Optical image stabilization on the Plus'],fact:'It became the best-selling iPhone generation ever.',variants:'iPhone 6, iPhone 6 Plus'},
+ {id:'6s',name:'iPhone 6s & 6s Plus',date:'2015-09-25',era:'flat',price:'$649 / $749',display:'4.7" / 5.5"',chip:'A9',storage:'16 / 64 / 128 GB',camera:'12 MP',network:'4G LTE',os:'iOS 9',front:'touchid',dims:[138.3,67.1],col:'#e8c4bd',
+  feats:['3D Touch pressure-sensitive screen','Live Photos','12 MP camera with 4K video','Rose gold color'],fact:'Phones were now priced up front as carriers moved away from contracts.',variants:'iPhone 6s, iPhone 6s Plus'},
+ {id:'se1',name:'iPhone SE',date:'2016-03-31',era:'flat',price:'$399',display:'4"',chip:'A9',storage:'16 / 64 GB',camera:'12 MP',network:'4G LTE',os:'iOS 9.3',front:'touchid',dims:[123.8,58.6],col:'#c7c9cd',
+  feats:['The 5s body with 6s insides','Cheapest new iPhone at launch','Last small 4" iPhone'],fact:'Many people bought it just to keep a phone that fits in one hand.'},
+ {id:'7',name:'iPhone 7 & 7 Plus',date:'2016-09-16',era:'flat',price:'$649 / $769',display:'4.7" / 5.5"',chip:'A10 Fusion',storage:'32 / 128 / 256 GB',camera:'12 MP (dual on Plus)',network:'4G LTE',os:'iOS 10',front:'touchid',dims:[138.3,67.1],col:'#1a1a1c',
+  feats:['No headphone jack','Water resistant (IP67)','Solid-state home button','Portrait mode on the Plus'],fact:'Apple called removing the headphone jack "courage".',variants:'iPhone 7, iPhone 7 Plus'},
+ {id:'8',name:'iPhone 8 & 8 Plus',date:'2017-09-22',era:'notch',price:'$699 / $799',display:'4.7" / 5.5"',chip:'A11 Bionic',storage:'64 / 256 GB',camera:'12 MP',network:'4G LTE',os:'iOS 11',front:'touchid',dims:[138.4,67.3],col:'#e3d6c6',
+  feats:['Glass back','Wireless (Qi) charging','True Tone display'],fact:'Launched the same year as iPhone X, as the last "classic" design flagship.',variants:'iPhone 8, iPhone 8 Plus'},
+ {id:'x',name:'iPhone X',date:'2017-11-03',era:'notch',price:'$999',display:'5.8" OLED',chip:'A11 Bionic',storage:'64 / 256 GB',camera:'12 MP dual',network:'4G LTE',os:'iOS 11',front:'notch',dims:[143.6,70.9],col:'#c9ccd1',
+  feats:['Edge-to-edge OLED screen','Face ID replaced Touch ID','No home button: swipe gestures','Animoji'],fact:'"X" is pronounced "ten", marking ten years of iPhone.'},
+ {id:'xs',name:'iPhone XS, XS Max & XR',date:'2018-09-21',era:'notch',price:'$999 / $1,099 / $749',display:'5.8" / 6.5" / 6.1"',chip:'A12 Bionic',storage:'64 / 256 / 512 GB',camera:'12 MP dual (single on XR)',network:'4G LTE',os:'iOS 12',front:'notch',dims:[150.9,75.7],col:'#3a6fd8',
+  feats:['First 6.5" iPhone (XS Max)','Colorful XR with an LCD screen','Dual SIM with eSIM','Smart HDR'],fact:'The cheaper XR outsold the XS models.',variants:'iPhone XS, iPhone XS Max, iPhone XR (Oct 26)'},
+ {id:'11',name:'iPhone 11, 11 Pro & Pro Max',date:'2019-09-20',era:'notch',price:'$699 / $999 / $1,099',display:'6.1" / 5.8" / 6.5"',chip:'A13 Bionic',storage:'64 / 256 / 512 GB',camera:'Dual 12 MP, triple on Pro',network:'4G LTE',os:'iOS 13',front:'notch',dims:[150.9,75.7],col:'#b8a9d9',
+  feats:['Ultra-wide camera','Night mode','First "Pro" iPhones with three cameras','Dark mode arrived with iOS 13'],fact:'The square three-lens camera bump became an instant meme.',variants:'iPhone 11, iPhone 11 Pro, iPhone 11 Pro Max'},
+ {id:'se2',name:'iPhone SE (2nd gen)',date:'2020-04-24',era:'notch',price:'$399',display:'4.7"',chip:'A13 Bionic',storage:'64 / 128 / 256 GB',camera:'12 MP',network:'4G LTE',os:'iOS 13',front:'touchid',dims:[138.4,67.3],col:'#1a1a1c',
+  feats:['iPhone 8 body with the A13 chip','Touch ID home button','Low price'],fact:'Launched during the early pandemic lockdowns.'},
+ {id:'12',name:'iPhone 12 family',date:'2020-10-23',era:'notch',price:'$799 (mini $699, Pro $999)',display:'5.4" / 6.1" / 6.7"',chip:'A14 Bionic',storage:'64 – 512 GB',camera:'Dual 12 MP, triple on Pro',network:'5G',os:'iOS 14',front:'notch',dims:[146.7,71.5],col:'#2c4a6e',
+  feats:['5G','Flat edges came back','MagSafe magnets','Ceramic Shield front','No charger in the box'],fact:'The 12 mini was the smallest modern iPhone, at 5.4 inches.',variants:'iPhone 12 mini, 12, 12 Pro, 12 Pro Max'},
+ {id:'13',name:'iPhone 13 family',date:'2021-09-24',era:'notch',price:'$799 (mini $699, Pro $999)',display:'5.4" / 6.1" / 6.7"',chip:'A15 Bionic',storage:'128 GB – 1 TB',camera:'Dual 12 MP, triple on Pro',network:'5G',os:'iOS 15',front:'notch',dims:[146.7,71.5],col:'#f0c6cf',
+  feats:['20% smaller notch','ProMotion 120 Hz on the Pros','Cinematic video mode','First 1 TB iPhone'],fact:'Base storage finally doubled to 128 GB.',variants:'iPhone 13 mini, 13, 13 Pro, 13 Pro Max'},
+ {id:'se3',name:'iPhone SE (3rd gen)',date:'2022-03-18',era:'island',price:'$429',display:'4.7"',chip:'A15 Bionic',storage:'64 / 128 / 256 GB',camera:'12 MP',network:'5G',os:'iOS 15',front:'touchid',dims:[138.4,67.3],col:'#b2273a',
+  feats:['5G in the classic home-button body','A15 chip'],fact:'So far the last iPhone with a home button.'},
+ {id:'14',name:'iPhone 14 family',date:'2022-09-16',era:'island',price:'$799 (Plus $899, Pro $999)',display:'6.1" / 6.7"',chip:'A15 (A16 on Pro)',storage:'128 GB – 1 TB',camera:'12 MP, 48 MP on Pro',network:'5G',os:'iOS 16',front:'island',dims:[147.5,71.5],col:'#4b3f5c',
+  feats:['Dynamic Island on the Pros','Always-On display on the Pros','Emergency SOS via satellite','Crash Detection','US models dropped the SIM tray'],fact:'The Dynamic Island turned the camera cutout into a live, animated part of the screen.',variants:'iPhone 14, 14 Plus, 14 Pro, 14 Pro Max'},
+ {id:'15',name:'iPhone 15 family',date:'2023-09-22',era:'island',price:'$799 (Plus $899, Pro $999)',display:'6.1" / 6.7"',chip:'A16 (A17 Pro on Pro)',storage:'128 GB – 1 TB',camera:'48 MP',network:'5G',os:'iOS 17',front:'island',dims:[146.6,70.6],col:'#8a8580',
+  feats:['USB-C replaced Lightning','Dynamic Island on every model','Titanium Pros','Action button replaced the mute switch'],fact:'The switch to USB-C was pushed by a European Union rule.',variants:'iPhone 15, 15 Plus, 15 Pro, 15 Pro Max'},
+ {id:'16',name:'iPhone 16 family',date:'2024-09-20',era:'island',price:'$799 (Plus $899, Pro $999)',display:'6.1" / 6.7" / 6.3" / 6.9"',chip:'A18 (A18 Pro on Pro)',storage:'128 GB – 1 TB',camera:'48 MP',network:'5G',os:'iOS 18',front:'island',dims:[149.6,71.5],col:'#c8a98a',
+  feats:['Camera Control button','Action button on every model','Built for Apple Intelligence','Biggest Pro screens yet (6.3" and 6.9")'],fact:'Apple Intelligence features rolled out in updates after launch.',variants:'iPhone 16, 16 Plus, 16 Pro, 16 Pro Max'},
+ {id:'16e',name:'iPhone 16e',date:'2025-02-28',era:'island',price:'$599',display:'6.1"',chip:'A18',storage:'128 / 256 / 512 GB',camera:'48 MP',network:'5G',os:'iOS 18.3',front:'notch',dims:[146.7,71.5],col:'#eeeeee',
+  feats:['Apple\'s first own cellular modem (C1)','Replaced the SE as the cheapest iPhone','Face ID, no home button'],fact:'With it, every iPhone on sale finally had Face ID.'},
+ {id:'17',name:'iPhone 17, Air & 17 Pro',date:'2025-09-19',era:'island',price:'$799 / $999 / $1,099',display:'6.3" / 6.5" / 6.9"',chip:'A19 (A19 Pro on Air and Pro)',storage:'256 GB – 2 TB',camera:'48 MP',network:'5G',os:'iOS 26',front:'island',dims:[150,71.9],col:'#e0823d',
+  feats:['iPhone Air: just 5.6 mm thin','ProMotion 120 Hz on the base model','256 GB base storage','Liquid Glass design in iOS 26','Pro returns to aluminum with a vapor chamber'],fact:'Software jumped from iOS 18 to iOS 26, named for the year ahead.',variants:'iPhone 17, iPhone Air, 17 Pro, 17 Pro Max'}];
+const OS=[['iPhone OS 1','2007','Multi-touch, Safari, Visual Voicemail.'],['iPhone OS 2','2008','The App Store.'],['iPhone OS 3','2009','Copy and paste, Spotlight search.'],['iOS 4','2010','Multitasking, folders, FaceTime.'],['iOS 5','2011','Notification Center, iMessage, iCloud.'],['iOS 6','2012','Apple Maps, Do Not Disturb.'],['iOS 7','2013','The flat redesign, Control Center, AirDrop.'],['iOS 8','2014','Apple Pay, third-party keyboards, Health.'],['iOS 9','2015','Low Power Mode, News.'],['iOS 10','2016','Redesigned lock screen, iMessage effects.'],['iOS 11','2017','Face ID gestures, Files app.'],['iOS 12','2018','Screen Time, faster on old phones.'],['iOS 13','2019','Dark mode.'],['iOS 14','2020','Home screen widgets, App Library.'],['iOS 15','2021','Focus modes, Live Text.'],['iOS 16','2022','Customizable lock screen.'],['iOS 17','2023','StandBy, Contact Posters.'],['iOS 18','2024','Free icon placement, Apple Intelligence.'],['iOS 26','2025','Liquid Glass design.']];
+const PLAYS=[{era:'original',id:'4',t:'2007: The original',d:'Slide to unlock, glossy icons, Phone and Messages.',href:'player.html?device=Phone'},
+  {era:'flat',id:'6',t:'2013: The flat era',d:'Home button, flat icons, Control Center from the bottom.',href:'era.html?e=flat'},
+  {era:'notch',id:'x',t:'2017: The notch',d:'No home button. Swipe up to go home, Face ID unlock.',href:'era.html?e=notch'},
+  {era:'island',id:'16',t:'2022: Dynamic Island',d:'Timers and music live in the island at the top.',href:'era.html?e=island'}];
+const $=s=>document.querySelector(s),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmtD=d=>new Date(d+'T12:00').toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+// ---------- phone drawing (mm based, so drawings are to scale)
+function phone(g,s=1,opts={}){const H=g.dims[0],W=g.dims[1],r={original:9,flat:10,notch:12,island:11}[g.era]*(g.id==='2g'?1.1:1),pad=4;
+  const bez=g.front==='home'||g.front==='touchid'?{t:17,b:17,s:4.5}:{t:3.2,b:3.2,s:3.2};
+  const sw=W-2*bez.s,sh=H-bez.t-bez.b,id='g'+Math.random().toString(36).slice(2,8);
+  let extra='';
+  if(g.front==='home'||g.front==='touchid'){extra+=`<circle cx="${W/2}" cy="${H-bez.b/2}" r="5.4" fill="#0c0c0e" stroke="${g.front==='touchid'?'#8a8d93':'#333'}" stroke-width=".6"/>`;if(g.front==='home')extra+=`<rect x="${W/2-2}" y="${H-bez.b/2-2}" width="4" height="4" rx="1" fill="none" stroke="#666" stroke-width=".5"/>`;
+    extra+=`<rect x="${W/2-5.5}" y="${bez.t/2-.8}" width="11" height="1.6" rx=".8" fill="#2a2a2d"/>`}
+  if(g.front==='notch')extra+=`<path d="M${W/2-17} ${bez.t} h34 v2.5 a3 3 0 0 1 -3 3 h-28 a3 3 0 0 1 -3 -3z" fill="#000"/>`;
+  if(g.front==='island')extra+=`<rect x="${W/2-10.5}" y="${bez.t+2}" width="21" height="6" rx="3" fill="#000"/>`;
+  const dark=g.front==='home'||g.front==='touchid'?(['#f2f2f2','#f4f4f4','#e8c4bd','#e3d6c6','#c7c9cd','#d9b77e','#b9bcc2'].includes(g.col)&&g.id!=='2g'?'#f5f5f7':'#0c0c0e'):'#0c0c0e';
+  const scr=opts.screen||`url(#${id})`;
+  return`<svg width="${(W+pad*2)*s}" height="${(H+pad*2)*s}" viewBox="${-pad} ${-pad} ${W+pad*2} ${H+pad*2}" ${opts.attr||''}><defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${ERAS[g.era].hex}" stop-opacity=".9"/><stop offset="1" stop-color="#0a0f2a"/></linearGradient></defs>
+    <rect x="-.8" y="-.8" width="${W+1.6}" height="${H+1.6}" rx="${r+.8}" fill="${g.col}"/><rect x=".4" y=".4" width="${W-.8}" height="${H-.8}" rx="${r-.4}" fill="${dark}"/>
+    <rect x="${bez.s}" y="${bez.t}" width="${sw}" height="${sh}" rx="${g.front==='home'||g.front==='touchid'?.6:r-3}" fill="${scr}"/>${extra}</svg>`}
+// ---------- hero parade
+$('#parade').innerHTML=G.filter(g=>!/^se|16e/.test(g.id)).map((g,i)=>phone(g,innerWidth<700?.42:.62,{attr:`style="animation-delay:${i*70}ms" data-id="${g.id}"`})).join('');
+$('#parade').onclick=e=>{const s=e.target.closest('svg');if(s)openG(s.dataset.id)};
+// ---------- nav + timeline
+const navEl=$('#nav');navEl.insertAdjacentHTML('beforeend',[['#timeline','Timeline'],...Object.keys(ERAS).map(k=>['#era-'+k,ERAS[k].years.split(' ')[0]+' '+ERAS[k].name.replace('The ','').replace(' era','')]),['#compare','Compare'],['#software','Software'],['#play','Play']].map(([h,t])=>`<a href="${h}">${t}</a>`).join(''));
+let html='';for(const k in ERAS){const e=ERAS[k];html+=`<div class="era" id="era-${k}"><i style="background:${e.c}"></i><h3>${e.name}</h3><span>${e.years} · ${e.blurb}</span></div><div class="tl">`;
+  G.filter(g=>g.era===k).forEach(g=>{html+=`<article class="card" data-id="${g.id}" style="--dot:${e.c}"><div class="pic">${phone(g,.75)}</div><div><div class="date">${fmtD(g.date)}</div><h4>${esc(g.name)}</h4>
+    <div class="chips"><span class="chip hl">${esc(g.price)}</span><span class="chip">${esc(g.display)}</span><span class="chip">${esc(g.chip)}</span><span class="chip">${esc(g.network)}</span></div>
+    <ul>${g.feats.slice(0,3).map(f=>`<li>${esc(f)}</li>`).join('')}</ul><div class="more">Full details →</div></div></article>`});html+='</div>'}
+$('#tl').innerHTML=html;
+document.querySelectorAll('.card').forEach(c=>c.onclick=()=>openG(c.dataset.id));
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.15});
+document.querySelectorAll('.card').forEach(c=>io.observe(c));
+const secs=[...document.querySelectorAll('section,.era')];
+addEventListener('scroll',()=>{let cur=null;for(const s of secs)if(s.getBoundingClientRect().top<120)cur=s.id;navEl.querySelectorAll('a').forEach(a=>{const on=a.getAttribute('href')==='#'+cur;if(on&&!a.classList.contains('on'))a.scrollIntoView({inline:'center',block:'nearest'});a.classList.toggle('on',on)})},{passive:true});
+// ---------- detail drawer
+const FIELDS=[['Released','date'],['Launch price (US)','price'],['Display','display'],['Chip','chip'],['Storage','storage'],['Main camera','camera'],['Network','network'],['Shipped with','os'],['Front','front'],['Size (main model)','dims']];
+const FRONT={home:'Home button',touchid:'Touch ID home button',notch:'Notch with Face ID',island:'Dynamic Island with Face ID'};
+const val=(g,k)=>k==='date'?fmtD(g.date):k==='front'?FRONT[g.front]:k==='dims'?`${g.dims[0]} × ${g.dims[1]} mm`:g[k];
+function openG(id){const i=G.findIndex(g=>g.id===id),g=G[i],p=G[i-1];const pl=PLAYS.find(x=>x.era===g.era);
+  $('#drawer').innerHTML=`<button class="x" aria-label="Close">✕</button><div class="date" style="color:${ERAS[g.era].c}">${ERAS[g.era].name}</div><h3>${esc(g.name)}</h3>${g.variants?`<div style="color:var(--mut);font-size:14px">${esc(g.variants)}</div>`:''}
+    <div class="dpic">${p?`<div style="opacity:.45;text-align:center">${phone(p,1.35)}<div style="font-size:12px;color:var(--mut)">${esc(p.name)}</div></div>`:''}<div style="text-align:center">${phone(g,1.35)}<div style="font-size:12px">${esc(g.name)}</div></div></div>
+    <table>${FIELDS.map(([l,k])=>{const ch=p&&k!=='date'&&val(p,k)!==val(g,k);return`<tr><td>${l}</td><td>${esc(val(g,k))}${ch?` <span class="new">● new</span>`:''}</td></tr>`}).join('')}</table>
+    <h5>Headline features</h5><ul>${g.feats.map(f=>`<li>${esc(f)}</li>`).join('')}</ul>
+    <h5>Fun fact</h5><p style="margin:0">${esc(g.fact)}</p>
+    ${p?`<h5>What changed from ${esc(p.name)}</h5><ul>${FIELDS.filter(([,k])=>k!=='date'&&val(p,k)!==val(g,k)).map(([l,k])=>`<li>${l}: ${esc(val(p,k))} → <b>${esc(val(g,k))}</b></li>`).join('')||'<li>Same core specs</li>'}</ul>`:''}
+    <p style="margin-top:20px"><a class="btn" href="${pl.href}">Play the ${ERAS[g.era].name.replace('The ','')} phone →</a> <button class="btn ghost" id="tocmp">Compare</button></p>
+    <div class="nav2"><button id="pv" ${i?'':'disabled'}>← ${i?esc(G[i-1].name):''}</button><button id="nx" ${i<G.length-1?'':'disabled'}>${i<G.length-1?esc(G[i+1].name):''} →</button></div>`;
+  $('#drawer').classList.add('on');$('#ov').classList.add('on');$('#drawer').scrollTop=0;
+  $('#drawer .x').onclick=closeG;$('#pv').onclick=()=>openG(G[i-1].id);$('#nx').onclick=()=>openG(G[i+1].id);
+  $('#tocmp').onclick=()=>{closeG();$('#ca').value=p?p.id:G[0].id;$('#cb').value=g.id;cmp();location.hash='compare'}}
+function closeG(){$('#drawer').classList.remove('on');$('#ov').classList.remove('on')}
+$('#ov').onclick=closeG;addEventListener('keydown',e=>{if(e.key==='Escape')closeG()});
+// ---------- compare
+const opts=G.map(g=>`<option value="${g.id}">${esc(g.name)} (${g.date.slice(0,4)})</option>`).join('');$('#ca').innerHTML=opts;$('#cb').innerHTML=opts;$('#ca').value='2g';$('#cb').value='17';
+function cmp(){const a=G.find(g=>g.id===$('#ca').value),b=G.find(g=>g.id===$('#cb').value),s=innerWidth<640?1.25:1.9,ov=$('#overlay').checked;
+  $('#stage').innerHTML=ov?`<div style="position:relative;width:${(Math.max(a.dims[1],b.dims[1])+8)*s}px;height:${(Math.max(a.dims[0],b.dims[0])+8)*s}px">
+      <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);opacity:.95">${phone(b,s)}</div><div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);opacity:.75;filter:drop-shadow(0 0 6px #000)">${phone(a,s)}</div></div>`
+    :`<div>${phone(a,s)}<div class="lbl">${esc(a.name)}</div></div><div>${phone(b,s)}<div class="lbl">${esc(b.name)}</div></div>`;
+  $('#ctab').innerHTML=`<tr><td></td><td><b>${esc(a.name)}</b></td><td><b>${esc(b.name)}</b></td></tr>`+FIELDS.map(([l,k])=>{const d=val(a,k)!==val(b,k);return`<tr class="${d?'d':''}"><td>${l}</td><td>${esc(val(a,k))}</td><td>${esc(val(b,k))}</td></tr>`}).join('')+
+    `<tr><td>Years apart</td><td colspan="2">${Math.abs(+b.date.slice(0,4)-+a.date.slice(0,4))} years</td></tr>`}
+['#ca','#cb','#overlay'].forEach(s=>$(s).onchange=cmp);cmp();addEventListener('resize',()=>cmp());
+// ---------- software + plays
+$('#os').innerHTML=OS.map(o=>`<div><small>${o[1]}</small><b>${o[0]}</b><p>${o[2]}</p></div>`).join('');
+$('#plays').innerHTML=PLAYS.map(p=>`<a class="play" href="${p.href}" style="--c:${ERAS[p.era].c}"><div class="pic">${phone(G.find(g=>g.id===p.id),.85)}</div><b>${p.t}</b><span>${p.d}</span><em>Play →</em></a>`).join('');
 </script>
 </body>
 </html>
