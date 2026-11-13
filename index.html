@@ -178,7 +178,7 @@ const settingsMenu=()=>listView('Settings',()=>[
   {label:'Brightness',val:(S.bright||100)+'%',go:()=>{cycleBright();render()}},
   {label:'Clicker',val:S.clicker?'On':'Off',go:()=>{S.clicker=!S.clicker;save();render()}},
   {label:'Case Color',val:S.case,go:()=>{S.case=S.case==='White'?'Black':'White';save();applyCase();render()}},
-  {label:'Device',val:'Classic',go:()=>{S.device='Touch';save();applyDevice()}},
+  {label:'Device',val:'Classic',go:()=>{S.device='Touch';S.model='Touch';save();applyDevice()}},
   {label:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');render()}}
 ]);
 
@@ -341,8 +341,8 @@ stack.push(mainMenu);render();
 <script>
 (function(){
 const tpage=$('#tpage');const T={stack:[],tab:'Songs'};const top=()=>T.stack[T.stack.length-1];
-function tpush(p){if(p){T.stack.push(p);tpage.classList.add('anim');trender();setTimeout(()=>tpage.classList.remove('anim'),260)}}
-function tback(){if(T.stack.length>1){T.stack.pop();trender()}}
+function tpush(p){if(!p)return;const k=T.stack.length===1?'open':'push';if(TT.anim)TT.anim(k,()=>T.stack.push(p));else{T.stack.push(p);trender()}}
+function tback(){if(T.stack.length>1){if(TT.anim)TT.anim('back',()=>T.stack.pop());else{T.stack.pop();trender()}}}
 function trender(){if(S.device!=='Touch')return;const p=top();
   tpage.innerHTML=(p.nav?`<div class="tnav">${T.stack.length>1?'<button class="tbk">‹ Back</button>':''}<b>${esc(p.title)}</b></div>`:'')+`<div class="tcontent ${p.cls||''}">${p.html()}</div>`;
   const bk=tpage.querySelector('.tbk');if(bk)bk.onclick=tback;if(p.bind)p.bind(tpage.querySelector('.tcontent'))}
@@ -393,7 +393,7 @@ function brickPage(){const g=brick();const p={nav:true,title:'Brick',cls:'tgame'
 function setPage(){return listPage('Settings',()=>[
   {main:'Shuffle',val:S.shuffle?'On':'Off',go:()=>{S.shuffle=!S.shuffle;save();trender()}},
   {main:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();trender()}},
-  {main:'Device',val:'Touch',go:()=>{S.device='Classic';save();applyDevice()}},
+  {main:'Device',val:S.model==='Phone'?'First-gen Phone':'Touch',go:()=>{if(S.model!=='Phone')S.model='Phone';else{S.model='Touch';S.device='Classic'}save();applyDevice()}},
   {main:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');trender()}}])}
 const apps=[['Music','♫','#ff7a59,#d6246e',musicPage],['Now Playing','▶','#4facfe,#1d4ed8',npPage],['Cover Flow','💿','#555,#111',cfPage],['Clock','🕒','#3a3a3a,#000',clockPage],
   ['Stopwatch','⏱','#f7a531,#d35400',swPage],['Brick','🧱','#2bc48a,#11785a',brickPage],['Add Music','＋','#b39ddb,#6a4cc2',()=>{$('#file').click()}],['Settings','⚙️','#c3cad1,#6c7a89',setPage]];
@@ -432,7 +432,7 @@ document.body.insertBefore($('#touch'),$('.help'));const HELP=$('.help').innerHT
 @keyframes shim{from{background-position:100% 0}to{background-position:-50% 0}}
 .knob{position:absolute;left:3px;top:3px;width:60px;height:40px;border-radius:8px;background:linear-gradient(#fff,#b9b9b9);color:#777;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:grab;touch-action:none;z-index:1}
 .toff{position:absolute;inset:0;background:#000;z-index:40;display:none}.toff.on{display:block}
-.tban{position:absolute;left:6px;right:6px;top:24px;z-index:30;background:rgba(22,22,24,.94);color:#fff;border-radius:10px;padding:8px;display:flex;gap:8px;align-items:center;transform:translateY(-150%);transition:transform .3s;box-shadow:0 4px 12px rgba(0,0,0,.5)}
+.tban{position:absolute;left:6px;right:6px;top:24px;z-index:30;background:rgba(22,22,24,.94);color:#fff;border-radius:10px;padding:8px;display:flex;gap:8px;align-items:center;transform:translateY(calc(-100% - 40px));transition:transform .3s;box-shadow:0 4px 12px rgba(0,0,0,.5)}
 .tban.on{transform:none}.tban .tth{width:34px;height:34px}.tban div{min-width:0}
 .tban small{display:block;font-size:9px;color:#aaa;letter-spacing:1px}.tban b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tban span{font-size:11px;color:#ccc}
 .tcc{position:absolute;left:0;right:0;top:20px;z-index:35;background:rgba(18,18,22,.95);color:#fff;padding:12px 14px 8px;transform:translateY(calc(-100% - 40px));transition:transform .3s;border-radius:0 0 16px 16px;box-shadow:0 8px 20px rgba(0,0,0,.6)}
@@ -559,7 +559,7 @@ const setPage=()=>listPage('Settings',()=>[
   {main:'Equalizer',val:S.eq,ch:1,go:eqPage},
   {main:'Shuffle',val:S.shuffle?'On':'Off',go:()=>{S.shuffle=!S.shuffle;save();trender()}},
   {main:'Repeat',val:S.repeat,go:()=>{S.repeat={Off:'One',One:'All',All:'Off'}[S.repeat];save();trender()}},
-  {main:'Device',val:'Touch',go:()=>{S.device='Classic';save();applyDevice()}},
+  {main:'Device',val:S.model==='Phone'?'First-gen Phone':'Touch',go:()=>{if(S.model!=='Phone')S.model='Phone';else{S.model='Touch';S.device='Classic'}save();applyDevice()}},
   {main:'Lock Now',go:()=>{lockNow()}},
   {main:'Clear Library',go:()=>{audio.pause();audio.removeAttribute('src');tracks.length=0;queue=[];qi=-1;toast('Library cleared');trender()}}]);
 // ---------- home screen with dock
@@ -571,6 +571,7 @@ const dock=[A('Music','♫','#ff7a59,#d6246e',musicPage),A('Now Playing','▶','
 const icon=(a,k)=>`<button class="tapp" data-k="${k}"><i style="background:linear-gradient(${a[2]})">${a[1]}</i>${a[0]}</button>`;
 home.html=()=>`<div class="tgrid">${grid.map((a,i)=>icon(a,'g'+i)).join('')}</div><div class="tdock">${dock.map((a,i)=>icon(a,'d'+i)).join('')}</div>`;
 home.bind=el=>el.querySelectorAll('.tapp').forEach(b=>b.onclick=()=>{const k=b.dataset.k,a=(k[0]==='g'?grid:dock)[+k.slice(1)];tpush(a[3]())});
+TT.pages={cfPage,clockPage,swPage,brickPage,calcPage,notesPage,camPage,wxPage,vizPage,eqPage,musicPage,npPage,photosPage,setPage,grid,dock,icon};
 // ---------- lock screen, sleep, banner, control center
 const mk=c=>{const d=document.createElement('div');d.className=c;scr.appendChild(d);return d};
 const lock=mk('tlock'),ban=mk('tban'),cc=mk('tcc'),off=mk('toff');
@@ -585,10 +586,10 @@ function renderLock(){if(dragging)return;const t=cur();
   k.onpointermove=e=>{if(!dragging)return;x=Math.min(max(),Math.max(0,e.clientX-x0));k.style.transform=`translateX(${x}px)`;trk.querySelector('span').style.opacity=1-x/max()};
   k.onpointerup=()=>{dragging=false;k.style.transition='transform .25s';if(x>max()*.85){unlock()}else{x=0;k.style.transform='';trk.querySelector('span').style.opacity=1}}}
 function lockTime(){const n=new Date(),a=lock.querySelector('.lt'),b=lock.querySelector('.ld');if(a){a.textContent=n.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});b.textContent=n.toLocaleDateString([],{weekday:'long',month:'long',day:'numeric'})}}
-function unlock(){locked=false;lock.classList.add('hide');trender()}
+function unlock(){locked=false;lock.classList.add('hide');trender();if(TT.flyIn)TT.flyIn()}
 function lockNow(){locked=true;cc.classList.remove('on');lock.classList.remove('hide');renderLock()}
 pw.onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow()}else{off.classList.add('on');lockNow()}};
-$('#thomebtn').onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow();return}if(locked)return;if(cc.classList.contains('on')){cc.classList.remove('on');return}T.stack.length=1;trender()};
+$('#thomebtn').onclick=()=>{if(off.classList.contains('on')){off.classList.remove('on');lockNow();return}if(locked)return;if(cc.classList.contains('on')){cc.classList.remove('on');return}TT.goHome()};
 const _load=load;load=function(){_load();const t=cur();if(t&&S.device==='Touch'&&!off.classList.contains('on')&&(locked||top().title!=='Now Playing')){
   ban.innerHTML=`${thumb(t,t.album)}<div><small>NOW PLAYING</small><b>${esc(t.title)}</b><span>${esc(t.artist)}</span></div>`;ban.classList.add('on');clearTimeout(ban.t);ban.t=setTimeout(()=>ban.classList.remove('on'),2600)}};
 function renderCC(){cc.innerHTML=`<div class="r2">☀︎<input type="range" class="ccb" min="25" max="100" value="${S.bright}">☀️</div><div class="r2">🔈<input type="range" class="ccv" min="0" max="100" value="${Math.round(audio.volume*100)}">🔊</div>
@@ -606,6 +607,179 @@ const _r=render;render=function(){_r();if(S.device==='Touch'&&locked&&!lock.clas
 const _ad=window.applyDevice;window.applyDevice=function(){_ad();if(S.device==='Touch')lockNow();else stopCam()};
 setInterval(()=>{lockTime();if(stream&&(S.device!=='Touch'||top().cls!=='tcam'||locked))stopCam()},1000);
 renderCC();renderLock();if(S.device!=='Touch')lock.classList.add('hide');else lock.classList.remove('hide');
+})();
+</script>
+
+<style>
+/* ---- motion polish ---- */
+.tghost{pointer-events:none}
+.tapp i{transition:transform .12s}.tapp:active i{transform:scale(.9);filter:brightness(.75)}
+.jiggle .tapp i{animation:jig .26s ease-in-out infinite alternate}
+.jiggle .tapp:nth-child(2n) i{animation-delay:-.13s;animation-direction:alternate-reverse}
+@keyframes jig{from{transform:rotate(-2.5deg)}to{transform:rotate(2.5deg)}}
+.tlock.hide{transform:none;opacity:0;pointer-events:none;transition:opacity .35s .2s}
+.tlock{transition:opacity .25s}
+.tlock .lbar,.tlock .slide{transition:transform .38s cubic-bezier(.5,0,.2,1)}
+.tlock .lnp{transition:opacity .25s,transform .3s}
+.tlock.hide .lbar{transform:translateY(-110%)}.tlock.hide .slide{transform:translateY(110%)}.tlock.hide .lnp{opacity:0;transform:scale(.9)}
+.toff{display:block!important;opacity:0;pointer-events:none;transition:opacity .35s}.toff.on{opacity:1;pointer-events:auto}
+.tcc{transition:transform .45s cubic-bezier(.2,1,.3,1)}
+.tban{transition:transform .5s cubic-bezier(.2,1.3,.4,1)}
+.trow{transition:background .15s}
+.row{transition:background .12s}
+.cghost{pointer-events:none}
+/* ---- first-gen phone frame ---- */
+.touch.phone{border-radius:38px;background:linear-gradient(160deg,#1e1e20,#000);box-shadow:0 30px 60px rgba(0,0,0,.45),0 0 0 7px #d3d6da,0 0 0 8px #8e9196,inset 0 0 0 1px #2a2a2a}
+.touch.phone:before{top:31px;width:56px;height:7px;background:#333}
+.touch.phone .tpower{background:linear-gradient(#333,#000)}
+.touch.phone .thome{background:linear-gradient(#111,#262628)}
+/* ---- phone app ---- */
+.tphone{background:linear-gradient(#2b2b2b,#000);display:flex;flex-direction:column;padding:6px 14px 8px}
+.pnum{height:52px;color:#fff;font-size:30px;text-align:center;font-weight:300;line-height:52px;overflow:hidden;white-space:nowrap}
+.pkeys{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.pkeys button{height:57px;border-radius:10px;border:1px solid #444;background:linear-gradient(#5a5a5e,#2a2a2d);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:inherit;transition:transform .08s}
+.pkeys button:active{transform:scale(.94);background:linear-gradient(#4a8af5,#1d55c7)}
+.pkeys b{font-size:24px;font-weight:400}.pkeys small{font-size:9px;letter-spacing:1px;color:#aaa;height:10px}
+.pbar{display:grid;grid-template-columns:1fr 1.6fr 1fr;gap:7px;margin-top:9px}
+.pbar button{height:46px;border-radius:10px;border:1px solid #444;background:linear-gradient(#444,#222);color:#fff;font-size:14px;cursor:pointer;font-family:inherit;transition:transform .08s}
+.pbar button:active{transform:scale(.95)}
+.pbar .pcall{background:linear-gradient(#5fd35f,#1f8a1f);border-color:#176d17;font-weight:700;font-size:17px}
+.tcall{background:linear-gradient(#3b4555,#0d1117);color:#fff;display:flex;flex-direction:column;align-items:center;padding:16px 18px 16px}
+.cav{width:84px;height:84px;border-radius:50%;background:linear-gradient(#8aa0bf,#4c6283);display:flex;align-items:center;justify-content:center;font-size:40px;margin-top:14px;animation:ring 1.4s infinite}
+@keyframes ring{from{box-shadow:0 0 0 0 rgba(255,255,255,.45)}to{box-shadow:0 0 0 24px rgba(255,255,255,0)}}
+.connected .cav{animation:none}
+.cname{font-size:24px;margin-top:12px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cstat{font-size:14px;color:#bbb;margin-top:4px;font-variant-numeric:tabular-nums}
+.csim{font-size:10px;color:#778;margin-top:2px}
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.25);border-radius:12px;overflow:hidden;margin-top:auto;width:100%}
+.cgrid button{height:66px;background:rgba(30,35,45,.92);border:0;color:#fff;font-size:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-family:inherit;transition:background .15s}
+.cgrid button span{font-size:22px}.cgrid button.on{background:#e8eef7;color:#123}
+.cend{margin-top:12px;width:100%;height:50px;border-radius:12px;border:1px solid #7a1010;background:linear-gradient(#f26a6a,#b71c1c);color:#fff;font-size:18px;font-weight:700;cursor:pointer}
+/* ---- messages ---- */
+.tmsg{display:flex;flex-direction:column;background:#dbe2ed;overflow:hidden}
+.mlist{flex:1;overflow-y:auto;padding:10px 8px;display:flex;flex-direction:column;gap:6px;scroll-behavior:smooth}
+.bub{max-width:76%;padding:7px 11px;border-radius:16px;font-size:14px;line-height:1.3;overflow-wrap:anywhere;box-shadow:0 1px 1px rgba(0,0,0,.2);-webkit-user-select:text;user-select:text;color:#111}
+.bub.me{align-self:flex-end;background:linear-gradient(#cdf7a0,#86d443);border-bottom-right-radius:4px;transform-origin:right bottom}
+.bub.them{align-self:flex-start;background:linear-gradient(#fff,#e4e4e4);border-bottom-left-radius:4px;transform-origin:left bottom}
+.bub.new{animation:bubIn .35s cubic-bezier(.2,1.4,.4,1)}@keyframes bubIn{from{transform:scale(.3);opacity:0}}
+.typing span{display:inline-block;width:6px;height:6px;border-radius:50%;background:#888;margin:0 1px;animation:dot 1s infinite}
+.typing span:nth-child(2){animation-delay:.15s}.typing span:nth-child(3){animation-delay:.3s}
+@keyframes dot{0%,60%,100%{transform:none;opacity:.4}30%{transform:translateY(-4px);opacity:1}}
+.deliv{align-self:flex-end;font-size:10px;color:#667;margin-top:-3px}
+.mbar{display:flex;gap:6px;padding:6px;background:linear-gradient(#e9edf2,#c5ccd6);border-top:1px solid #9aa4b1;flex:none;margin:0}
+.mbar input{flex:1;border:1px solid #9aa4b1;border-radius:14px;padding:6px 10px;font-size:14px;outline:none;-webkit-user-select:text;user-select:text;min-width:0}
+.mbar button{border:1px solid #3d6e1f;border-radius:14px;background:linear-gradient(#8fd45a,#4a9a20);color:#fff;font-weight:700;padding:0 12px;cursor:pointer}
+.mto{display:flex;align-items:center;gap:6px;padding:8px 10px;background:#fff;border-bottom:1px solid #ccc;flex:none;font-size:14px;color:#777;margin:0}
+.mto input{flex:1;border:0;outline:none;font-size:14px;-webkit-user-select:text;user-select:text}
+</style>
+<script>
+(function(){
+const {T,trender,top,home,listPage,tback,tpush}=TT,P=TT.pages;
+const tpage=$('#tpage'),scr=$('.tscreen'),E='cubic-bezier(.2,.8,.2,1)';
+if(!S.model)S.model='Touch';
+// ---------- page transitions: app zoom from icon, iOS-style slide inside apps
+let finishPrev=null;
+TT.anim=function(kind,mut){
+  if(finishPrev)finishPrev();
+  const g=document.createElement('div');g.className='tpage tghost';
+  while(tpage.firstChild)g.appendChild(tpage.firstChild);
+  g.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));
+  const front=kind==='back'||kind==='close';tpage.parentNode.insertBefore(g,front?tpage.nextSibling:tpage);
+  mut();trender();
+  const o=T.origin||{x:152,y:228},org=`${o.x}px ${o.y-20}px`;let a,b,d=330;
+  if(kind==='push'){a=[{transform:'translateX(100%)'},{transform:'none'}];b=[{transform:'none',filter:'brightness(1)'},{transform:'translateX(-30%)',filter:'brightness(.6)'}]}
+  else if(kind==='back'){a=[{transform:'translateX(-30%)',filter:'brightness(.6)'},{transform:'none',filter:'brightness(1)'}];b=[{transform:'none'},{transform:'translateX(100%)'}]}
+  else if(kind==='open'){d=400;tpage.style.transformOrigin=org;a=[{transform:'scale(.1)',opacity:0,borderRadius:'40px'},{transform:'none',opacity:1,borderRadius:'0'}];b=[{transform:'none',opacity:1},{transform:'scale(1.3)',opacity:0}];g.style.transformOrigin=org}
+  else{d=380;g.style.transformOrigin=org;a=[{transform:'scale(1.3)',opacity:0},{transform:'none',opacity:1}];b=[{transform:'none',opacity:1,borderRadius:'0'},{transform:'scale(.1)',opacity:0,borderRadius:'40px'}]}
+  tpage.animate(a,{duration:d,easing:E});const an=g.animate(b,{duration:d,easing:E,fill:'forwards'});
+  const done=()=>{g.remove();tpage.style.transformOrigin='';finishPrev=null};finishPrev=done;an.onfinish=done;setTimeout(()=>{if(finishPrev===done)done()},d+120)};
+// ---------- home: per-device app sets, long-press jiggle, icon fly-in
+let jig=false;
+const extra=[['Phone','📞','#7be07b,#1f9a2b',()=>phonePage()],['Messages','💬','#9be86f,#2fa31a',()=>msgsPage()]];
+const all=[...P.grid,...P.dock,...extra],by=n=>all.find(a=>a[0]===n);
+const sets={Touch:{grid:P.grid,dock:P.dock},
+  Phone:{grid:['Photos','Camera','Weather','Calculator','Notes','Clock','Stopwatch','Brick','Cover Flow','Now Playing','Visualizer','Add Music'].map(by),dock:['Phone','Messages','Music','Settings'].map(by)}};
+const set=()=>sets[S.model]||sets.Touch;
+home.html=()=>{const s=set();return`<div class="tgrid ${jig?'jiggle':''}">${s.grid.map((a,i)=>P.icon(a,'g'+i)).join('')}</div><div class="tdock ${jig?'jiggle':''}">${s.dock.map((a,i)=>P.icon(a,'d'+i)).join('')}</div>`};
+home.bind=el=>{const s=set();el.querySelectorAll('.tapp').forEach(b=>{let tm=null,long=false;
+  b.onpointerdown=()=>{long=false;tm=setTimeout(()=>{long=true;jig=true;el.querySelectorAll('.tgrid,.tdock').forEach(x=>x.classList.add('jiggle'))},550)};
+  b.onpointerup=b.onpointerleave=()=>clearTimeout(tm);
+  b.onclick=()=>{if(long||jig)return;const k=b.dataset.k,a=(k[0]==='g'?s.grid:s.dock)[+k.slice(1)],r=b.querySelector('i').getBoundingClientRect(),sr=scr.getBoundingClientRect();
+    T.origin={x:r.left+r.width/2-sr.left,y:r.top+r.height/2-sr.top};tpush(a[3]())}})};
+TT.goHome=()=>{if(jig){jig=false;tpage.querySelectorAll('.jiggle').forEach(x=>x.classList.remove('jiggle'));return}if(T.stack.length===1)return;TT.anim('close',()=>{T.stack.length=1})};
+TT.flyIn=()=>{if(T.stack.length!==1)return;const s=scr.getBoundingClientRect(),cx=s.left+s.width/2,cy=s.top+s.height/2;
+  tpage.querySelectorAll('.tapp').forEach((b,i)=>{const r=b.getBoundingClientRect(),dx=r.left+r.width/2-cx,dy=r.top+r.height/2-cy;
+    b.animate([{transform:`translate(${dx}px,${dy}px) scale(1.9)`,opacity:0},{transform:'none',opacity:1}],{duration:560,delay:120+i*14,easing:E,fill:'backwards'})})};
+// ---------- classic: sliding menus
+const cbody=$('#body');let depth=stack.length;
+const _r=render;render=function(){const d=stack.length;
+  if(d!==depth&&S.device!=='Touch'){const fwd=d>depth;depth=d;const g=document.createElement('div');g.className='body cghost';
+    while(cbody.firstChild)g.appendChild(cbody.firstChild);g.querySelectorAll('[id]').forEach(e=>e.removeAttribute('id'));cbody.after(g);cbody.dataset.v='';_r();
+    const o={duration:280,easing:'cubic-bezier(.3,.7,.3,1)'};cbody.animate([{transform:`translateX(${fwd?100:-100}%)`},{transform:'none'}],o);
+    g.animate([{transform:'none'},{transform:`translateX(${fwd?-100:100}%)`}],{...o,fill:'forwards'}).onfinish=()=>g.remove();setTimeout(()=>g.remove(),420);return}
+  depth=d;_r()};
+// ---------- device switching with a flip, and the phone model
+function applyModel(){const ph=S.model==='Phone';$('#touch').classList.toggle('phone',ph);
+  $('.tsb span').innerHTML=ph?'<span style="letter-spacing:-1px">▂▄▆█</span> Carrier <b style="font-size:10px">E</b>':'Music Player';
+  if(S.device==='Touch')$('.help').innerHTML=ph?'A first-gen style phone: make (pretend) calls, text the built-in Buddy bot, play music. Press and hold an icon to make them wiggle; the round button stops it.':'Tap the screen like a phone. Tap the status bar for the control center. Press and hold an icon to make them wiggle.'}
+const _ad=window.applyDevice;window.applyDevice=function(){jig=false;_ad();applyModel();depth=stack.length;
+  const el=S.device==='Touch'?$('#touch'):$('#device');el.animate([{transform:'perspective(1400px) rotateY(-75deg) scale(.85)',opacity:0},{transform:'none',opacity:1}],{duration:600,easing:E})};
+applyModel();if(S.device==='Touch')trender();
+// ---------- Phone app (simulated calls)
+let ac=()=>{actx=actx||new AudioContext();return actx};
+function tone(fs,dur,vol=.07){try{const c=ac(),g=c.createGain();g.gain.value=vol;g.connect(c.destination);fs.forEach(f=>{const o=c.createOscillator();o.frequency.value=f;o.connect(g);o.start();o.stop(c.currentTime+dur)})}catch(e){}}
+const KEYS=[['1',''],['2','ABC'],['3','DEF'],['4','GHI'],['5','JKL'],['6','MNO'],['7','PQRS'],['8','TUV'],['9','WXYZ'],['*',''],['0','+'],['#','']];
+const dtmf=k=>{const i='123456789*0#'.indexOf(k);tone([[697,770,852,941][i/3|0],[1209,1336,1477][i%3]],.14)};
+const recents=[];
+function phonePage(){let num='';return{nav:true,title:'Keypad',cls:'tphone',
+  html(){return`<div class="pnum">${esc(num)}</div><div class="pkeys">${KEYS.map(k=>`<button data-k="${k[0]}"><b>${k[0]}</b><small>${k[1]}</small></button>`).join('')}</div>
+    <div class="pbar"><button class="prec">Recents</button><button class="pcall">📞 Call</button><button class="pdel">⌫</button></div>`},
+  bind(el){const show=()=>el.querySelector('.pnum').textContent=num;
+    el.querySelectorAll('.pkeys button').forEach(b=>b.onclick=()=>{if(num.length<16){num+=b.dataset.k;dtmf(b.dataset.k);show()}});
+    el.querySelector('.pdel').onclick=()=>{num=num.slice(0,-1);show()};
+    el.querySelector('.prec').onclick=()=>tpush(listPage('Recents',()=>recents.length?recents.map(r=>({main:r.num,sub:new Date(r.t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})+' · '+fmt(r.dur),go:()=>callPage(r.num)})):[{main:'No recent calls'}]));
+    el.querySelector('.pcall').onclick=()=>{if(num)tpush(callPage(num));else{const p=el.querySelector('.pnum');p.animate([{transform:'translateX(0)'},{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250})}}}}}
+function callPage(num){let start=0,iv=null;const p={title:'Call',cls:'tcall',noRefresh:true,
+  html(){return`<div class="cav">👤</div><div class="cname">${esc(num)}</div><div class="cstat">calling…</div><div class="csim">pretend call · nobody is really dialed</div>
+    <div class="cgrid">${[['mute','🔇'],['keypad','⌨️'],['speaker','🔊'],['add call','➕'],['hold','⏸'],['contacts','👥']].map(b=>`<button><span>${b[1]}</span>${b[0]}</button>`).join('')}</div><button class="cend">End Call</button>`},
+  bind(el){if(!wasPaused0)wasPaused0=audio.paused?'p':'r';audio.pause();tone([440,480],1.2,.05);
+    const st=el.querySelector('.cstat');const t0=setTimeout(()=>{start=Date.now();el.classList.add('connected');tone([660],.08)},2600);
+    iv=setInterval(()=>{if(top()!==p){clearInterval(iv);clearTimeout(t0);return}if(start)st.textContent=fmt((Date.now()-start)/1000)},250);
+    el.querySelectorAll('.cgrid button').forEach(b=>b.onclick=()=>b.classList.toggle('on'));
+    el.querySelector('.cend').onclick=()=>{clearInterval(iv);clearTimeout(t0);recents.unshift({num,t:Date.now(),dur:start?(Date.now()-start)/1000:0});
+      st.textContent='call ended';tone([480],.15);if(wasPaused0==='r')audio.play();wasPaused0=null;setTimeout(tback,450)}}};return p}
+let wasPaused0=null;
+// ---------- Messages (local only, with a little chat bot)
+let threads=null;try{threads=JSON.parse(localStorage.getItem('cwp-msgs'))}catch(e){}
+if(!Array.isArray(threads))threads=[{name:'Buddy',bot:1,msgs:[{me:0,text:'Hey! Text me anything. Try "what\'s playing?" or "tell me a joke".',t:Date.now()}]}];
+const saveT=()=>{try{localStorage.setItem('cwp-msgs',JSON.stringify(threads))}catch(e){}};
+const pick=a=>a[Math.random()*a.length|0];
+const JOKES=['Why did the MP3 go to therapy? Too many issues with compression. 😅','I told my phone a joke. It didn\'t laugh, but it vibrated a little.','Why are playlists bad at secrets? They always shuffle the truth.','My battery and I have a lot in common: we both die at 1%.'];
+function botSay(q){q=q.toLowerCase();const t=cur();
+  if(/\b(hi|hey|hello|yo|sup)\b/.test(q))return pick(['Hey! 👋','Hi there!','Yo! What\'s up?']);
+  if(/play|song|music|listen/.test(q))return t?`You're listening to "${t.title}" by ${t.artist} ${audio.paused?'(paused)':'🎵'}`:'Nothing\'s playing yet. Drop some music onto the page!';
+  if(/time/.test(q))return'It\'s '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})+' ⏰';
+  if(/joke|funny/.test(q))return pick(JOKES);
+  if(/weather/.test(q))return'Check the Weather app ⛅';
+  if(/how are/.test(q))return'Doing great, thanks for asking! 😊';
+  if(/\?\s*$/.test(q))return pick(['Hmm, good question 🤔','Probably!','Ask me again later 😄']);
+  return pick(['Nice!','Haha 😂','Tell me more','Cool cool','👍','For real?','Love that'])}
+const msgsPage=()=>listPage('Messages',()=>[{main:'＋ New Message',go:()=>newMsgPage()},...threads.map(th=>({main:th.name,sub:(th.msgs[th.msgs.length-1]||{}).text||'',ch:1,go:()=>threadPage(th)}))]);
+const bubbles=(th,fresh)=>th.msgs.map((m,i)=>`<div class="bub ${m.me?'me':'them'} ${fresh&&i===th.msgs.length-1?'new':''}">${esc(m.text)}</div>`).join('')+
+  (th.msgs.length&&th.msgs[th.msgs.length-1].me&&!th.bot?'<div class="deliv">Delivered</div>':'');
+const bar='<form class="mbar"><input placeholder="Text Message" maxlength="300" autocomplete="off"><button>Send</button></form>';
+function threadPage(th){const p={nav:true,title:th.name,cls:'tmsg',noRefresh:true,
+  html(){return`<div class="mlist">${bubbles(th)}</div>${bar}`},
+  bind(el){const list=el.querySelector('.mlist'),inp=el.querySelector('.mbar input');const draw=f=>{list.innerHTML=bubbles(th,f);list.scrollTop=1e6};list.scrollTop=1e6;
+    el.querySelector('.mbar').onsubmit=e=>{e.preventDefault();const text=inp.value.trim();if(!text)return;inp.value='';th.msgs.push({me:1,text,t:Date.now()});threads.splice(threads.indexOf(th),1);threads.unshift(th);saveT();draw(true);tone([1400],.05,.04);
+      if(th.bot){setTimeout(()=>{if(top()!==p)return;list.insertAdjacentHTML('beforeend','<div class="bub them new typing"><span></span><span></span><span></span></div>');list.scrollTop=1e6},500);
+        setTimeout(()=>{th.msgs.push({me:0,text:botSay(text),t:Date.now()});saveT();if(top()===p){draw(true);tone([1000,1500],.09,.04)}},1500+Math.random()*700)}};
+    setTimeout(()=>inp.focus(),400)}};return p}
+function newMsgPage(){return{nav:true,title:'New Message',cls:'tmsg',noRefresh:true,
+  html(){return`<form class="mto"><span>To:</span><input class="toin" placeholder="Name" autocomplete="off"></form><div class="mlist"></div>${bar}`},
+  bind(el){const to=el.querySelector('.toin'),inp=el.querySelector('.mbar input');el.querySelector('.mto').onsubmit=e=>{e.preventDefault();inp.focus()};
+    el.querySelector('.mbar').onsubmit=e=>{e.preventDefault();const text=inp.value.trim(),name=to.value.trim()||'Unknown';if(!text)return;
+      let th=threads.find(t=>t.name.toLowerCase()===name.toLowerCase());if(!th){th={name,msgs:[]};threads.unshift(th)}th.msgs.push({me:1,text,t:Date.now()});saveT();
+      T.stack[T.stack.length-1]=threadPage(th);trender()};setTimeout(()=>to.focus(),400)}}}
 })();
 </script>
 
