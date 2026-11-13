@@ -2,7 +2,7 @@
 
 A fan-made history of every iPhone generation, 2007 to 2025, with playable phones from each design era.
 
-**Visit:** https://artsemisokarau-ctrl.github.io/click-wheel-player/
+**Visit:** https://artsemisokarau-ctrl.github.io/iphone-history/
 
 ## What's inside
 - **Timeline** (`index.html`): every generation grouped into four eras, with to-scale drawings, launch prices, specs, headline features, fun facts and what changed from the model before.
